@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sacroexpo 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:#222;font-size:15px}
+/* HEADER */
+.hdr{background:#1a1a2e;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.hdr h1{font-size:16px;font-weight:700}
+.hdr .sub{font-size:11px;color:#b8960c;margin-top:2px}
+.tabs{display:flex;gap:4px}
+.tb{background:rgba(255,255,255,.1);border:none;color:#ccc;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+.tb.on{background:#b8960c;color:#fff}
+/* PAGES */
+.page{display:none}
+.page.on{display:block}
+/* FORM */
+.wrap{max-width:680px;margin:24px auto;padding:0 16px 60px}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.1);margin-bottom:16px;overflow:hidden}
+.sh{padding:10px 16px;font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.sh.dark{background:#1a1a2e}.sh.green{background:#2e7d32}.sh.orange{background:#e65100}.sh.gray{background:#555}.sh.blue{background:#1565c0}
+.fb{padding:16px}
+.row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px}
+.fg label{font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.3px}
+.fg input,.fg select,.fg textarea{border:1.5px solid #ddd;border-radius:7px;padding:9px 11px;font-size:14px;font-family:Arial,sans-serif;background:#fafafa;color:#222;transition:border-color .15s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#b8960c;background:#fff}
+textarea{resize:vertical;min-height:72px}
+/* CHECKBOXES */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ci{display:flex;align-items:center;gap:10px;background:#f5faf5;border:1.5px solid #dce8dc;border-radius:8px;padding:10px 12px;cursor:pointer;user-select:none}
+.ci:hover{border-color:#2e7d32}.ci.on{background:#e8f5e9;border-color:#2e7d32}
+.ci input[type=checkbox]{width:18px;height:18px;accent-color:#2e7d32;flex-shrink:0}
+.ci span{font-size:14px;font-weight:600;color:#2e7d32}
+.ci.wide{grid-column:span 2}
+.ci.wide input[type=text]{flex:1;border:none;border-bottom:1.5px solid #ccc;border-radius:0;background:transparent;padding:2px 4px;font-size:14px}
+/* NK */
+.nk{border:2px dashed #ccc;border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:#fafafa}
+.nk:hover{border-color:#b8960c;background:#fffbf0}
+.nk.has{border-color:#2e7d32;background:#f0faf0}
+/* BTNS */
+.btn-save{width:100%;padding:14px;background:#1a1a2e;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-save:hover{background:#2d2d5e}
+.btn-clear{width:100%;padding:10px;background:transparent;color:#999;border:1.5px solid #ddd;border-radius:10px;font-size:14px;cursor:pointer;margin-top:8px}
+.btn-clear:hover{color:#e53935;border-color:#e53935}
+/* SUMMARY */
+.swrap{padding:20px;max-width:1100px;margin:0 auto}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px}
+.sc{background:#fff;border-radius:10px;padding:14px 16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sc .v{font-size:28px;font-weight:700;color:#1a1a2e}
+.sc .l{font-size:11px;color:#888;margin-top:3px;text-transform:uppercase}
+.sc.gold .v{color:#b8960c}.sc.green .v{color:#2e7d32}.sc.blue .v{color:#1565c0}
+.twrap{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
+.ttbar{padding:12px 16px;display:flex;gap:10px;align-items:center;border-bottom:1px solid #eee;flex-wrap:wrap}
+.ttbar input{flex:1;min-width:160px;padding:7px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:13px}
+.ttbar input:focus{outline:none;border-color:#b8960c}
+.tbtn{background:#1a1a2e;color:#fff;border:none;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.tbtn:hover{background:#2d2d5e}
+.tbtn.red{background:transparent;color:#e53935;border:1.5px solid #e53935}
+.tbtn.red:hover{background:#fdecea}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:#f5f5f5;padding:9px 10px;text-align:left;font-size:11px;color:#666;text-transform:uppercase;border-bottom:1px solid #eee;cursor:pointer;white-space:nowrap;user-select:none}
+.tbl th:hover{background:#eee}
+.tbl td{padding:9px 10px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+.tbl tr:hover td{background:#fffbf0}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700}
+.bg{background:#f5f5f5;color:#555}.bb{background:#e3f2fd;color:#1565c0}.bgr{background:#e8f5e9;color:#2e7d32}.bo{background:#fff3e0;color:#e65100}
+.acts{display:flex;gap:2px;white-space:nowrap}
+.ab{border:none;background:none;cursor:pointer;padding:5px 7px;border-radius:5px;font-size:16px}
+.ab:hover{background:#f0f0f0}
+.empty{text-align:center;padding:48px 16px;color:#aaa}
+.empty .bi{font-size:40px;margin-bottom:8px}
+/* ORDER ITEMS TABLE */
+.oit{width:100%;border-collapse:collapse;font-size:13px;min-width:580px}
+.oit th{background:#1a1a2e;color:#fff;padding:8px 8px;font-size:11px;text-align:left;font-weight:700}
+.oit td{padding:5px 5px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+.oit input,.oit select{width:100%;border:1.5px solid #ddd;border-radius:5px;padding:6px 7px;font-size:13px;font-family:Arial,sans-serif;background:#fafafa}
+.oit input:focus,.oit select:focus{outline:none;border-color:#b8960c;background:#fff}
+.oit .tot-cell input{background:#f5f5f5;font-weight:700;color:#1a1a2e;text-align:right}
+.obar{background:#1a1a2e;color:#fff;padding:12px 16px;display:flex;justify-content:flex-end;align-items:center;gap:12px;font-size:14px}
+.obar .tv{font-size:22px;font-weight:700;color:#f5e6a3}
+.add-row{background:#e8f5e9;border:1.5px dashed #2e7d32;color:#2e7d32;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;margin-top:10px}
+.add-row:hover{background:#c8e6c9}
+/* MODAL */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:16px}
+.mbg.on{display:flex}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal.wide{max-width:780px}
+.mh{background:#1a1a2e;color:#fff;padding:13px 18px;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center}
+.mh.blue{background:#1565c0}
+.mh h3{font-size:15px}
+.mh-btns{display:flex;gap:6px;align-items:center}
+.mhb{background:rgba(255,255,255,.15);border:none;color:#fff;padding:5px 11px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700}
+.mhb.gold{background:#b8960c}
+.mhb.close{font-size:20px;line-height:1;padding:4px 8px}
+.mbody{padding:18px}
+.msavebar{display:none;padding:12px 18px;border-top:1px solid #eee;gap:10px}
+.msavebar.on{display:flex}
+.msave{flex:1;padding:10px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
+.mcancel{flex:1;padding:10px;background:transparent;color:#888;border:1.5px solid #ddd;border-radius:8px;font-size:14px;cursor:pointer}
+/* DETAIL ROWS */
+.dr{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start}
+.dl{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;min-width:110px;padding-top:2px}
+.dv{font-size:14px;color:#222;flex:1}
+hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
+/* EDIT FORM */
+.egrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.ef-group{display:flex;flex-direction:column;gap:3px}
+.ef-group label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase}
+.ef-group input,.ef-group select,.ef-group textarea{border:1.5px solid #ddd;border-radius:7px;padding:8px 9px;font-size:13px;font-family:Arial,sans-serif;width:100%}
+.ef-group input:focus,.ef-group select:focus{outline:none;border-color:#b8960c}
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#2e7d32;color:#fff;padding:12px 28px;border-radius:30px;font-size:14px;font-weight:700;z-index:999;transition:transform .3s;pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0)}
+/* NK preview */
+.nkprev img{max-height:80px;border-radius:6px;border:1px solid #ddd;margin-right:8px}
+@media(max-width:500px){.cgrid{grid-template-columns:1fr}.ci.wide{grid-column:span 1}.egrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>⛪ SACROEXPO 2026 — POLSKA</h1>
+    <div class="sub">Expo Poland · 2026.06.15–17 · Látogatói adatrögzítő</div>
+  </div>
+  <div class="tabs">
+    <button class="tb on" onclick="go('form')">✏ Adatlap</button>
+    <button class="tb" onclick="go('order')">🛒 Rendelés</button>
+    <button class="tb" onclick="go('list')">📋 Látogatók</button>
+    <button class="tb" onclick="go('orders')">📦 Rendelések</button>
+  </div>
+</div>
+
+<!-- ══════════ ADATLAP ══════════ -->
+<div id="pg-form" class="page on">
+<div class="wrap">
+
+  <div class="card">
+    <div class="sh dark">① Kitöltési adatok</div>
+    <div class="fb">
+      <div class="row">
+        <div class="fg" style="flex:2">
+          <label>Kitöltő neve *</label>
+          <input id="f-kit" type="text" placeholder="Munkatárs neve..." autocomplete="off">
+        </div>
+        <div class="fg" style="flex:1;min-width:130px">
+          <label>Dátum *</label>
+          <input id="f-dat" type="date" min="2026-06-15" max="2026-06-17">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh green">② Érdeklődés típusa</div>
+    <div class="fb">
+      <div class="cgrid">
+        <label class="ci" id="ci1"><input type="checkbox" id="f-kat" onchange="toggleCI('ci1',this)"><span>📚 Katalógus</span></label>
+        <label class="ci" id="ci2"><input type="checkbox" id="f-nk" onchange="toggleCI('ci2',this)"><span>📦 Nagyker árlista</span></label>
+        <label class="ci" id="ci3"><input type="checkbox" id="f-kk" onchange="toggleCI('ci3',this)"><span>🏪 Kisker árlista</span></label>
+        <label class="ci wide" id="ci4" onclick="event.stopPropagation()">
+          <input type="checkbox" id="f-eo" onchange="toggleCI('ci4',this)">
+          <span style="white-space:nowrap">Egyéb:</span>
+          <input type="text" id="f-et" placeholder="leírás..." onclick="event.stopPropagation()">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh dark">③ Cég / partner adatai</div>
+    <div class="fb">
+      <div class="row">
+        <div class="fg" style="flex:2"><label>Cég neve</label><input id="f-ceg" type="text" placeholder="Cég neve..." autocomplete="off"></div>
+        <div class="fg" style="flex:1;min-width:150px">
+          <label>Ország</label>
+          <select id="f-or" onchange="orChg('f-or','f-ore')">
+            <option value="">— válassz —</option>
+            <option value="Lengyelország">🇵🇱 Lengyelország</option>
+            <option value="Olaszország">🇮🇹 Olaszország</option>
+            <option value="Magyarország">🇭🇺 Magyarország</option>
+            <option value="Szlovákia">🇸🇰 Szlovákia</option>
+            <option value="__other">🌍 Egyéb...</option>
+          </select>
+          <input id="f-ore" type="text" placeholder="Ország neve..." style="display:none;margin-top:6px">
+        </div>
+      </div>
+      <div class="row">
+        <div class="fg"><label>Régió / Város</label><input id="f-var" type="text" placeholder="pl. Varsó..." autocomplete="off"></div>
+        <div class="fg"><label>Kontakt neve</label><input id="f-kon" type="text" placeholder="Kontakt személy..." autocomplete="off"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label>E-mail</label><input id="f-ema" type="email" placeholder="email@domain.com" autocomplete="off"></div>
+        <div class="fg"><label>Telefon</label><input id="f-tel" type="tel" placeholder="+48..." autocomplete="off"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh orange">④ Megjegyzés & egyéb</div>
+    <div class="fb">
+      <div class="fg" style="margin-bottom:12px"><label>Egyéb adat</label><input id="f-egy" type="text" placeholder="Pl. weblap, referencia..." autocomplete="off"></div>
+      <div class="fg"><label>Megjegyzés / kérés</label><textarea id="f-meg" placeholder="Szabad megjegyzés..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh gray">⑤ Névjegykártya fotó</div>
+    <div class="fb">
+      <div class="nk" id="nk-area" onclick="document.getElementById('nk-in').click()">
+        <div id="nk-disp">
+          <div style="font-size:32px;margin-bottom:6px">📷</div>
+          <p style="font-size:13px;color:#888">Kattints ide a névjegykártya lefotózásához / feltöltéséhez</p>
+        </div>
+      </div>
+      <input type="file" id="nk-in" accept="image/*" capture="environment" style="display:none" onchange="nkLoad(this)">
+      <button class="btn-clear" id="nk-clr" style="display:none" onclick="nkClear()">✕ Névjegykártya törlése</button>
+    </div>
+  </div>
+
+  <button class="btn-save" onclick="saveContact()">✓ Mentés és következő látogató</button>
+  <button class="btn-clear" onclick="clearContact()">✕ Mezők törlése</button>
+
+</div>
+</div>
+
+<!-- ══════════ RENDELÉS ══════════ -->
+<div id="pg-order" class="page">
+<div class="wrap" style="max-width:860px">
+
+  <div class="card">
+    <div class="sh dark" style="justify-content:space-between">🛒 Order Form — Sacroexpo 2026</div>
+    <div class="fb">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div class="fg" style="margin-bottom:10px"><label>Buyer / Customer *</label><input id="o-buy" type="text" placeholder="Vevő / cég neve..." autocomplete="off"></div>
+          <div class="fg" style="margin-bottom:10px"><label>Contact person</label><input id="o-con" type="text" placeholder="Kontakt neve..." autocomplete="off"></div>
+          <div class="row" style="margin-bottom:10px">
+            <div class="fg">
+              <label>Country</label>
+              <select id="o-or" onchange="orChg('o-or','o-ore')">
+                <option value="">— select —</option>
+                <option value="Lengyelország">🇵🇱 Poland</option>
+                <option value="Olaszország">🇮🇹 Italy</option>
+                <option value="Magyarország">🇭🇺 Hungary</option>
+                <option value="Szlovákia">🇸🇰 Slovakia</option>
+                <option value="__other">🌍 Other...</option>
+              </select>
+              <input id="o-ore" type="text" placeholder="Country name..." style="display:none;margin-top:6px">
+            </div>
+            <div class="fg"><label>City / Region</label><input id="o-cit" type="text" placeholder="City..." autocomplete="off"></div>
+          </div>
+          <div class="row">
+            <div class="fg"><label>E-mail</label><input id="o-ema" type="email" placeholder="email@..." autocomplete="off"></div>
+            <div class="fg"><label>Phone</label><input id="o-pho" type="tel" placeholder="+48..." autocomplete="off"></div>
+          </div>
+          <div class="fg" style="margin-bottom:10px"><label>Address</label><input id="o-adr" type="text" placeholder="Utca, házszám..." autocomplete="off"></div>
+        </div>
+        <div>
+          <div class="fg" style="margin-bottom:10px"><label>Order Number</label><input id="o-num" type="text" placeholder="SE2026-001..." autocomplete="off"></div>
+          <div class="fg" style="margin-bottom:10px"><label>Order Date</label><input id="o-dat" type="date" min="2026-06-15" max="2026-06-17"></div>
+          <div class="fg" style="margin-bottom:10px"><label>Recorded by</label><input id="o-rec" type="text" placeholder="Munkatárs neve..." autocomplete="off"></div>
+          <div class="fg"><label>Currency</label>
+            <select id="o-cur">
+              <option>EUR</option><option>PLN</option><option>HUF</option><option>USD</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh green" style="justify-content:space-between">📦 Order items <span id="o-cnt" style="font-size:11px;opacity:.8"></span></div>
+    <div class="fb" style="padding:12px 16px">
+      <div style="overflow-x:auto">
+        <table class="oit">
+          <thead><tr>
+            <th style="width:28px">#</th>
+            <th style="min-width:130px">Product Group</th>
+            <th style="min-width:100px">Code No.</th>
+            <th style="min-width:180px">Description</th>
+            <th style="width:70px">Qty</th>
+            <th style="width:70px">Unit</th>
+            <th style="width:90px">Unit price</th>
+            <th style="width:90px">Total</th>
+            <th style="width:32px"></th>
+          </tr></thead>
+          <tbody id="o-tbody"></tbody>
+        </table>
+      </div>
+      <button class="add-row" onclick="addORow()">+ Add item</button>
+    </div>
+    <div class="obar">
+      <span style="color:#aaa;font-size:12px">SUBTOTAL:</span>
+      <span class="tv" id="o-tot">0.00</span>
+      <span id="o-curl" style="font-size:13px;color:#ccc">EUR</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sh orange">📝 Notes / Remarks</div>
+    <div class="fb">
+      <textarea id="o-not" placeholder="Szállítási feltételek, különleges kérések..." style="width:100%;min-height:80px"></textarea>
+    </div>
+  </div>
+
+  <button class="btn-save" onclick="saveOrder()">✓ Save order</button>
+  <button class="btn-clear" onclick="clearOrder()">✕ Clear form</button>
+
+</div>
+</div>
+
+<!-- ══════════ LÁTOGATÓK ══════════ -->
+<div id="pg-list" class="page">
+<div class="swrap">
+  <div class="sgrid" id="c-stats"></div>
+  <div class="twrap">
+    <div class="ttbar">
+      <input type="text" placeholder="🔍 Keresés..." id="c-srch" oninput="renderContacts()">
+      <button class="tbtn" onclick="exportContactsCSV()">⬇ CSV</button>
+      <button class="tbtn" id="btn-zip" onclick="exportNKZip()" style="background:#2e7d32;display:none">📷 Képek ZIP</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr>
+          <th onclick="cSort('datum')">#  Dátum ↕</th>
+          <th onclick="cSort('ceg')">Cég ↕</th>
+          <th onclick="cSort('kontakt')">Kontakt ↕</th>
+          <th onclick="cSort('orszag')">Ország ↕</th>
+          <th>Érdeklődés</th>
+          <th>Email / Tel</th>
+          <th>Megjegyzés</th>
+          <th style="width:100px;text-align:center">Műveletek</th>
+        </tr></thead>
+        <tbody id="c-tbody"></tbody>
+      </table>
+    </div>
+    <div id="c-empty" class="empty" style="display:none"><div class="bi">📋</div><p>Még nincs rögzített látogató.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ RENDELÉSEK ══════════ -->
+<div id="pg-orders" class="page">
+<div class="swrap">
+  <div class="sgrid" id="o-stats"></div>
+  <div class="twrap">
+    <div class="ttbar">
+      <input type="text" placeholder="🔍 Keresés..." id="o-srch" oninput="renderOrders()">
+      <button class="tbtn" onclick="exportOrdersCSV()">⬇ CSV</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr>
+          <th>Dátum</th>
+          <th>Rendelési sz.</th>
+          <th>Vevő</th>
+          <th>Ország</th>
+          <th>Tételek</th>
+          <th>Összeg</th>
+          <th style="width:130px;text-align:center">Műveletek</th>
+        </tr></thead>
+        <tbody id="o-tbody-list"></tbody>
+      </table>
+    </div>
+    <div id="o-empty" class="empty" style="display:none"><div class="bi">🛒</div><p>Még nincs rögzített rendelés.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ LÁTOGATÓ MODAL ══════════ -->
+<div class="mbg" id="cm">
+  <div class="modal">
+    <div class="mh">
+      <h3 id="cm-title">Látogató</h3>
+      <div class="mh-btns">
+        <button class="mhb" id="cm-edit-btn" onclick="cmToggleEdit()">✏ Szerkesztés</button>
+        <button class="mhb close" onclick="closeModal('cm')">✕</button>
+      </div>
+    </div>
+    <div id="cm-view" class="mbody"></div>
+    <div id="cm-edit" style="display:none;padding:18px"></div>
+    <div class="msavebar" id="cm-savebar">
+      <button class="msave" onclick="cmSave()">✓ Mentés</button>
+      <button class="mcancel" onclick="cmCancelEdit()">Mégsem</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RENDELÉS MODAL ══════════ -->
+<div class="mbg" id="om">
+  <div class="modal wide">
+    <div class="mh">
+      <h3 id="om-title">Rendelés</h3>
+      <div class="mh-btns">
+        <button class="mhb" id="om-edit-btn" onclick="omToggleEdit()">✏ Szerkesztés</button>
+        <button class="mhb gold" onclick="openEmail()">✉ E-mail</button>
+        <button class="mhb close" onclick="closeModal('om')">✕</button>
+      </div>
+    </div>
+    <div id="om-view" class="mbody"></div>
+    <div id="om-edit" style="display:none;padding:18px"></div>
+    <div class="msavebar" id="om-savebar">
+      <button class="msave" onclick="omSave()">✓ Mentés</button>
+      <button class="mcancel" onclick="omCancelEdit()">Mégsem</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ EMAIL MODAL ══════════ -->
+<div class="mbg" id="em">
+  <div class="modal">
+    <div class="mh blue">
+      <h3>✉ E-mail visszaigazolás</h3>
+      <div class="mh-btns">
+        <button class="mhb" onclick="copyEmail()">📋 Másolás</button>
+        <button class="mhb gold" onclick="sendEmail()">📧 Megnyit</button>
+        <button class="mhb close" onclick="closeModal('em')">✕</button>
+      </div>
+    </div>
+    <div class="mbody">
+      <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="fg" style="flex:1;min-width:180px"><label>Címzett (To)</label><input id="em-to" type="email" placeholder="vevo@ceg.com"></div>
+        <div class="fg" style="flex:1;min-width:180px"><label>Tárgy (Subject)</label><input id="em-sub" type="text"></div>
+      </div>
+      <div class="fg"><label>Szöveg (szerkeszthető)</label>
+        <textarea id="em-body" style="min-height:320px;font-family:monospace;font-size:12px;line-height:1.6"></textarea>
+      </div>
+      <p style="font-size:11px;color:#aaa;margin-top:6px">💡 A "Megnyit" gomb az alapértelmezett levelezőt nyitja meg a kitöltött adatokkal.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+var contacts = [];
+var orders   = [];
+var cSortKey = 'datum', cSortDir = 1;
+var nkData   = null;
+var cmId = null, omId = null;
+var oRowId = 0, oeRowId = 0;
+
+function load() {
+  try { contacts = JSON.parse(localStorage.getItem('sc26_c')||'[]'); } catch(e){contacts=[];}
+  try { orders   = JSON.parse(localStorage.getItem('sc26_o')||'[]'); } catch(e){orders=[];}
+}
+function saveC() { localStorage.setItem('sc26_c', JSON.stringify(contacts)); }
+function saveO() { localStorage.setItem('sc26_o', JSON.stringify(orders)); }
+
+// ── TAB SWITCHING ─────────────────────────────────────────────
+function go(pg) {
+  document.querySelectorAll('.page').forEach(function(el){ el.style.display='none'; el.classList.remove('on'); });
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('on'); });
+  var p = document.getElementById('pg-'+pg);
+  if (p) { p.style.display='block'; p.classList.add('on'); }
+  var idx = {form:0,order:1,list:2,orders:3}[pg];
+  var btns = document.querySelectorAll('.tb');
+  if (btns[idx]) btns[idx].classList.add('on');
+  if (pg==='list')   { renderContacts(); renderContactStats(); }
+  if (pg==='orders') { renderOrders(); renderOrderStats(); }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg, col) {
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=col||'#2e7d32';
+  t.classList.add('on');
+  setTimeout(function(){ t.classList.remove('on'); }, 2800);
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('on');
+}
+function orChg(selId, inpId) {
+  var s=document.getElementById(selId), i=document.getElementById(inpId);
+  i.style.display = s.value==='__other' ? 'block' : 'none';
+  if (s.value!=='__other') i.value='';
+}
+function getOr(selId, inpId) {
+  var s=document.getElementById(selId);
+  return s.value==='__other' ? (document.getElementById(inpId).value.trim()||'Egyéb') : s.value;
+}
+function setOr(selId, inpId, val) {
+  var s=document.getElementById(selId), i=document.getElementById(inpId);
+  var opts=['Lengyelország','Olaszország','Magyarország','Szlovákia'];
+  if (opts.indexOf(val)>=0) { s.value=val; i.style.display='none'; i.value=''; }
+  else if (val) { s.value='__other'; i.style.display='block'; i.value=val; }
+  else { s.value=''; i.style.display='none'; i.value=''; }
+}
+function drow(lbl,val){ return '<div class="dr"><div class="dl">'+lbl+'</div><div class="dv">'+val+'</div></div>'; }
+
+// ── NÉVJEGYKÁRTYA ─────────────────────────────────────────────
+function toggleCI(id,cb){ document.getElementById(id).classList.toggle('on',cb.checked); }
+function nkLoad(inp) {
+  if (!inp.files||!inp.files[0]) return;
+  var r=new FileReader();
+  r.onload=function(e){
+    nkData=e.target.result;
+    document.getElementById('nk-area').classList.add('has');
+    document.getElementById('nk-disp').innerHTML='<div class="nkprev"><img src="'+nkData+'" alt="nk"><span style="font-size:13px;color:#2e7d32;font-weight:600">'+inp.files[0].name+'</span></div>';
+    document.getElementById('nk-clr').style.display='block';
+  };
+  r.readAsDataURL(inp.files[0]);
+}
+function nkClear() {
+  nkData=null; document.getElementById('nk-in').value='';
+  document.getElementById('nk-area').classList.remove('has');
+  document.getElementById('nk-disp').innerHTML='<div style="font-size:32px;margin-bottom:6px">📷</div><p style="font-size:13px;color:#888">Kattints ide a névjegykártya lefotózásához / feltöltéséhez</p>';
+  document.getElementById('nk-clr').style.display='none';
+}
+
+// ── CONTACT FORM ──────────────────────────────────────────────
+function saveContact() {
+  var kit=document.getElementById('f-kit').value.trim();
+  var dat=document.getElementById('f-dat').value;
+  if (!kit) { toast('❗ Add meg a kitöltő nevét!','#c62828'); return; }
+  if (!dat) { toast('❗ Add meg a dátumot!','#c62828'); return; }
+  var erd=[];
+  if (document.getElementById('f-kat').checked) erd.push('Katalógus');
+  if (document.getElementById('f-nk').checked)  erd.push('Nagyker árlista');
+  if (document.getElementById('f-kk').checked)  erd.push('Kisker árlista');
+  var et=document.getElementById('f-et').value.trim();
+  if (document.getElementById('f-eo').checked && et) erd.push('Egyéb: '+et);
+  contacts.unshift({
+    id:Date.now(), datum:dat, kitolto:kit,
+    ceg:document.getElementById('f-ceg').value.trim(),
+    orszag:getOr('f-or','f-ore'),
+    varos:document.getElementById('f-var').value.trim(),
+    kontakt:document.getElementById('f-kon').value.trim(),
+    email:document.getElementById('f-ema').value.trim(),
+    telefon:document.getElementById('f-tel').value.trim(),
+    egyeb:document.getElementById('f-egy').value.trim(),
+    megj:document.getElementById('f-meg').value.trim(),
+    erdeklodes:erd, nk:nkData
+  });
+  saveC();
+  toast('✓ Elmentve! ('+contacts.length+'. látogató)');
+  clearContact();
+}
+function clearContact() {
+  ['f-kit','f-ceg','f-var','f-kon','f-ema','f-tel','f-egy','f-meg','f-et'].forEach(function(id){ document.getElementById(id).value=''; });
+  ['f-kat','f-nk','f-kk','f-eo'].forEach(function(id){ document.getElementById(id).checked=false; });
+  ['ci1','ci2','ci3','ci4'].forEach(function(id){ document.getElementById(id).classList.remove('on'); });
+  document.getElementById('f-or').value=''; document.getElementById('f-ore').style.display='none'; document.getElementById('f-ore').value='';
+  nkClear();
+  document.getElementById('f-kit').focus();
+}
+
+// ── CONTACT LIST ──────────────────────────────────────────────
+function renderContactStats() {
+  var t=contacts.length, kat=0, nk=0, kk=0, nkc=0;
+  contacts.forEach(function(c){
+    if((c.erdeklodes||[]).indexOf('Katalógus')>=0) kat++;
+    if((c.erdeklodes||[]).indexOf('Nagyker árlista')>=0) nk++;
+    if((c.erdeklodes||[]).indexOf('Kisker árlista')>=0) kk++;
+    if(c.nk) nkc++;
+  });
+  document.getElementById('c-stats').innerHTML=[
+    ['Összes látogató',t,''],['Katalógus kért',kat,'green'],
+    ['Nagyker árlista',nk,'gold'],['Kisker árlista',kk,'gold'],['Névjegykártyával',nkc,'green']
+  ].map(function(s){ return '<div class="sc '+s[2]+'"><div class="v">'+s[1]+'</div><div class="l">'+s[0]+'</div></div>'; }).join('');
+  var zipBtn=document.getElementById('btn-zip');
+  if(zipBtn) zipBtn.style.display=nkc>0?'inline-block':'none';
+}
+function cSort(k){ if(cSortKey===k) cSortDir*=-1; else{cSortKey=k;cSortDir=1;} renderContacts(); }
+function renderContacts() {
+  renderContactStats();
+  var q=(document.getElementById('c-srch').value||'').toLowerCase();
+  var rows=contacts.filter(function(c){ return !q||[c.ceg,c.kontakt,c.email,c.orszag,c.varos].join(' ').toLowerCase().includes(q); });
+  rows.sort(function(a,b){ var va=a[cSortKey]||'',vb=b[cSortKey]||''; return va<vb?-cSortDir:va>vb?cSortDir:0; });
+  var body=document.getElementById('c-tbody'), empty=document.getElementById('c-empty');
+  if (!rows.length){ body.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  body.innerHTML=rows.map(function(c,i){
+    var badges=(c.erdeklodes||[]).map(function(e){ return '<span class="badge '+(e.includes('Katalógus')?'bb':e.includes('Nagyker')?'bo':'bgr')+'">'+esc(e)+'</span>'; }).join(' ');
+    return '<tr>'
+      +'<td style="font-size:11px;color:#888;white-space:nowrap">'+(i+1)+'. '+(c.datum||'').replace('2026-','')+'<br><span style="font-size:10px">'+esc(c.kitolto||'')+'</span></td>'
+      +'<td style="font-weight:600;color:#1a1a2e">'+esc(c.ceg||'—')+'</td>'
+      +'<td>'+esc(c.kontakt||'—')+'</td>'
+      +'<td><span class="badge bg">'+esc(c.orszag||'—')+'</span></td>'
+      +'<td>'+badges+'</td>'
+      +'<td style="font-size:12px">'+esc(c.email||'')+(c.email&&c.telefon?'<br>':'')+'<span style="color:#888">'+esc(c.telefon||'')+'</span></td>'
+      +'<td style="font-size:12px;color:#555;max-width:140px">'+esc((c.megj||'').substring(0,50))+(c.megj&&c.megj.length>50?'…':'')+'</td>'
+      +'<td><div class="acts">'
+        +'<button class="ab" title="Részletek" onclick="openContact('+c.id+')">👁</button>'
+        +'<button class="ab" title="Szerkesztés" onclick="openContact('+c.id+',true)">✏️</button>'
+        +'<button class="ab" title="Törlés" onclick="delContact('+c.id+')" style="color:#e53935">🗑</button>'
+        +(c.nk?'<span title="Van névjegy" style="color:#2e7d32;padding:5px 4px">📷</span>':'')
+      +'</div></td></tr>';
+  }).join('');
+}
+function delContact(id){ if(!confirm('Törli ezt a bejegyzést?')) return; contacts=contacts.filter(function(c){return c.id!==id;}); saveC(); renderContacts(); }
+function delAllContacts(){ if(!contacts.length||!confirm('Töröl minden ('+contacts.length+') látogatót?')) return; contacts=[]; saveC(); renderContacts(); }
+function exportContactsCSV() {
+  if (!contacts.length){ toast('Nincs exportálható adat!','#c62828'); return; }
+  var cols=['datum','kitolto','ceg','orszag','varos','kontakt','email','telefon','erdeklodes','egyeb','megj'];
+  var hdrs=['Dátum','Kitöltő','Cég','Ország','Város','Kontakt','Email','Telefon','Érdeklődés','Egyéb','Megjegyzés'];
+  var csv='\uFEFF'+hdrs.join(';')+'\n';
+  contacts.forEach(function(c){ csv+=cols.map(function(k){ var v=k==='erdeklodes'?(c[k]||[]).join(', '):(c[k]||''); return '"'+String(v).replace(/"/g,'""')+'"'; }).join(';')+'\n'; });
+  dl(csv,'sacroexpo2026_contacts_'+today()+'.csv');
+  toast('CSV letöltve!','#1565c0');
+}
+
+function exportNKZip() {
+  var withNK = contacts.filter(function(c){ return c.nk; });
+  if (!withNK.length){ toast('Nincs névjegykártya fotó!','#c62828'); return; }
+  // Download images one by one with a short delay
+  var i=0;
+  function next() {
+    if (i>=withNK.length) { toast('✓ '+withNK.length+' kép letöltve!','#2e7d32'); return; }
+    var c=withNK[i];
+    var name = sanitizeFilename((c.ceg||c.kontakt||'ismeretlen')+'_'+(c.datum||'').replace(/-/g,'')+'_'+i)+ getExt(c.nk);
+    var a=document.createElement('a');
+    a.href=c.nk; a.download=name; a.click();
+    i++; setTimeout(next, 400);
+  }
+  toast('⏳ Képek letöltése... ('+withNK.length+' db)','#1565c0');
+  setTimeout(next, 300);
+}
+
+function sanitizeFilename(s) {
+  return s.replace(/[^a-zA-Z0-9_\-áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/g,'_').substring(0,60);
+}
+function getExt(dataUrl) {
+  if (!dataUrl) return '.jpg';
+  var m=dataUrl.match(/data:image\/([a-zA-Z]+);/);
+  return m ? '.'+m[1].replace('jpeg','jpg') : '.jpg';
+}
+
+// ── CONTACT MODAL ─────────────────────────────────────────────
+var cmEditing=false;
+function openContact(id, edit) {
+  cmId=id; cmEditing=false;
+  var c=contacts.find(function(x){return x.id===id;});
+  if (!c) return;
+  document.getElementById('cm-title').textContent=(c.ceg||c.kontakt||'Látogató')+' — '+(c.datum||'');
+  renderCView(c);
+  document.getElementById('cm-view').style.display='block';
+  document.getElementById('cm-edit').style.display='none';
+  document.getElementById('cm-savebar').classList.remove('on');
+  document.getElementById('cm-edit-btn').textContent='✏ Szerkesztés';
+  document.getElementById('cm').classList.add('on');
+  if (edit) cmToggleEdit();
+}
+function renderCView(c) {
+  var badges=(c.erdeklodes||[]).map(function(e){ return '<span class="badge bb">'+esc(e)+'</span> '; }).join('');
+  var nkh=c.nk?'<img src="'+c.nk+'" style="max-width:180px;border-radius:8px;border:1px solid #ddd;margin-top:4px" alt="nk">':'<span style="color:#aaa;font-size:13px">Nincs csatolva</span>';
+  document.getElementById('cm-view').innerHTML=
+    drow('Dátum',esc(c.datum||'—'))+drow('Kitöltő',esc(c.kitolto||'—'))+'<hr class="div">'+
+    drow('Cég','<strong>'+esc(c.ceg||'—')+'</strong>')+drow('Kontakt',esc(c.kontakt||'—'))+
+    drow('Ország',esc(c.orszag||'—'))+drow('Régió/Város',esc(c.varos||'—'))+
+    drow('E-mail',c.email?'<a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'—')+
+    drow('Telefon',esc(c.telefon||'—'))+'<hr class="div">'+
+    drow('Érdeklődés',badges||'—')+drow('Egyéb adat',esc(c.egyeb||'—'))+drow('Megjegyzés',esc(c.megj||'—'))+'<hr class="div">'+
+    drow('Névjegykártya',nkh);
+}
+function cmToggleEdit() {
+  var c=contacts.find(function(x){return x.id===cmId;});
+  if (!c) return;
+  cmEditing=!cmEditing;
+  document.getElementById('cm-view').style.display=cmEditing?'none':'block';
+  document.getElementById('cm-edit').style.display=cmEditing?'block':'none';
+  document.getElementById('cm-savebar').classList.toggle('on',cmEditing);
+  document.getElementById('cm-edit-btn').textContent=cmEditing?'👁 Megtekintés':'✏ Szerkesztés';
+  if (cmEditing) {
+    var opts=['Lengyelország','Olaszország','Magyarország','Szlovákia'];
+    var isCustom=c.orszag&&opts.indexOf(c.orszag)===-1;
+    var orOpts='<option value="">—</option>'+opts.map(function(o){ return '<option'+(c.orszag===o?' selected':'')+'>'+o+'</option>'; }).join('')+'<option value="__other"'+(isCustom?' selected':'')+'>🌍 Egyéb...</option>';
+    var erds=['Katalógus','Nagyker árlista','Kisker árlista'];
+    var erdH=erds.map(function(e){ return '<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f5faf5;border:1.5px solid #dce8dc;border-radius:8px;margin-bottom:6px;cursor:pointer"><input type="checkbox"'+((c.erdeklodes||[]).indexOf(e)>=0?' checked':'')+' value="'+e+'" style="width:16px;height:16px;accent-color:#2e7d32"><span style="font-size:13px;font-weight:600;color:#2e7d32">'+e+'</span></label>'; }).join('');
+    var eErd=(c.erdeklodes||[]).filter(function(e){return e.startsWith('Egyéb:');}).map(function(e){return e.replace('Egyéb: ','').replace('Egyéb:','');}).join('');
+    document.getElementById('cm-edit').innerHTML=
+      '<div class="egrid">'
+      +'<div class="ef-group"><label>Dátum</label><input id="ce-dat" type="date" value="'+esc(c.datum||'')+'" min="2026-06-15" max="2026-06-17"></div>'
+      +'<div class="ef-group"><label>Kitöltő neve</label><input id="ce-kit" type="text" value="'+esc(c.kitolto||'')+'"></div>'
+      +'<div class="ef-group"><label>Cég neve</label><input id="ce-ceg" type="text" value="'+esc(c.ceg||'')+'"></div>'
+      +'<div class="ef-group"><label>Kontakt neve</label><input id="ce-kon" type="text" value="'+esc(c.kontakt||'')+'"></div>'
+      +'<div class="ef-group"><label>Ország</label><select id="ce-or" onchange="orChg(\'ce-or\',\'ce-ore\')">'+orOpts+'</select><input id="ce-ore" type="text" value="'+(isCustom?esc(c.orszag||''):'')+'" placeholder="Ország neve..." style="margin-top:5px;border:1.5px solid #ddd;border-radius:7px;padding:8px;font-size:13px;width:100%;'+(isCustom?'':'display:none')+'"></div>'
+      +'<div class="ef-group"><label>Régió / Város</label><input id="ce-var" type="text" value="'+esc(c.varos||'')+'"></div>'
+      +'<div class="ef-group"><label>E-mail</label><input id="ce-ema" type="email" value="'+esc(c.email||'')+'"></div>'
+      +'<div class="ef-group"><label>Telefon</label><input id="ce-tel" type="tel" value="'+esc(c.telefon||'')+'"></div>'
+      +'</div>'
+      +'<div class="ef-group" style="margin-bottom:10px"><label>Érdeklődés</label>'+erdH
+      +'<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f5faf5;border:1.5px solid #dce8dc;border-radius:8px;cursor:pointer"><input type="checkbox" id="ce-eo"'+(eErd?' checked':'')+' style="width:16px;height:16px;accent-color:#2e7d32"><span style="font-size:13px;font-weight:700;color:#2e7d32;white-space:nowrap">Egyéb:</span><input type="text" id="ce-et" value="'+esc(eErd)+'" placeholder="leírás..." style="flex:1;border:none;border-bottom:1.5px solid #ccc;border-radius:0;padding:2px 4px;font-size:13px" onclick="event.stopPropagation()"></label></div>'
+      +'<div class="ef-group" style="margin-bottom:10px"><label>Egyéb adat</label><input id="ce-egy" type="text" value="'+esc(c.egyeb||'')+'"></div>'
+      +'<div class="ef-group"><label>Megjegyzés</label><textarea id="ce-meg" style="min-height:60px">'+esc(c.megj||'')+'</textarea></div>';
+  }
+}
+function cmSave() {
+  var idx=contacts.findIndex(function(x){return x.id===cmId;});
+  if (idx===-1) return;
+  var c=contacts[idx];
+  var erds=[];
+  document.querySelectorAll('#cm-edit input[type=checkbox][value]').forEach(function(cb){ if(cb.checked) erds.push(cb.value); });
+  var eoCb=document.getElementById('ce-eo'), eoTxt=(document.getElementById('ce-et')||{}).value||'';
+  if (eoCb&&eoCb.checked&&eoTxt.trim()) erds.push('Egyéb: '+eoTxt.trim());
+  c.datum=document.getElementById('ce-dat').value;
+  c.kitolto=document.getElementById('ce-kit').value.trim();
+  c.ceg=document.getElementById('ce-ceg').value.trim();
+  c.kontakt=document.getElementById('ce-kon').value.trim();
+  c.orszag=getOr('ce-or','ce-ore');
+  c.varos=document.getElementById('ce-var').value.trim();
+  c.email=document.getElementById('ce-ema').value.trim();
+  c.telefon=document.getElementById('ce-tel').value.trim();
+  c.egyeb=document.getElementById('ce-egy').value.trim();
+  c.megj=document.getElementById('ce-meg').value.trim();
+  c.erdeklodes=erds;
+  contacts[idx]=c; saveC(); renderContacts();
+  cmEditing=false;
+  renderCView(c);
+  document.getElementById('cm-view').style.display='block';
+  document.getElementById('cm-edit').style.display='none';
+  document.getElementById('cm-savebar').classList.remove('on');
+  document.getElementById('cm-edit-btn').textContent='✏ Szerkesztés';
+  toast('✓ Módosítás elmentve!');
+}
+function cmCancelEdit() {
+  cmEditing=false;
+  var c=contacts.find(function(x){return x.id===cmId;});
+  if (c) renderCView(c);
+  document.getElementById('cm-view').style.display='block';
+  document.getElementById('cm-edit').style.display='none';
+  document.getElementById('cm-savebar').classList.remove('on');
+  document.getElementById('cm-edit-btn').textContent='✏ Szerkesztés';
+}
+
+// ── ORDER FORM ─────────────────────────────────────────────────
+function addORow(it) {
+  oRowId++;
+  var id=oRowId; it=it||{};
+  var uopts=['pcs','box','set','kg','m'].map(function(u){ return '<option'+(it.unit===u?' selected':'')+'>'+u+'</option>'; }).join('');
+  var tr=document.createElement('tr');
+  tr.id='or-'+id;
+  tr.innerHTML='<td style="text-align:center;color:#aaa;font-size:11px" id="orn-'+id+'"></td>'
+    +'<td><input type="text" value="'+esc(it.group||'')+'" placeholder="pl. Advent..." oninput="calcORow('+id+')" autocomplete="off"></td>'
+    +'<td><input type="text" value="'+esc(it.code||'')+'" placeholder="ADV-001" oninput="calcORow('+id+')" autocomplete="off"></td>'
+    +'<td><input type="text" value="'+esc(it.desc||'')+'" placeholder="Terméknév..." oninput="calcORow('+id+')" autocomplete="off"></td>'
+    +'<td><input type="number" value="'+esc(String(it.qty||''))+'" min="0" step="1" placeholder="0" oninput="calcORow('+id+')" style="text-align:right"></td>'
+    +'<td><select onchange="calcORow('+id+')">'+uopts+'</select></td>'
+    +'<td><input type="number" value="'+esc(String(it.price||''))+'" min="0" step="0.01" placeholder="0.00" oninput="calcORow('+id+')" style="text-align:right"></td>'
+    +'<td class="tot-cell"><input type="text" id="ort-'+id+'" value="'+esc(String(it.tot||''))+'" readonly></td>'
+    +'<td style="text-align:center"><button onclick="removeORow('+id+')" style="background:none;border:none;color:#e53935;cursor:pointer;font-size:16px;padding:4px">✕</button></td>';
+  document.getElementById('o-tbody').appendChild(tr);
+  reNumORows(); updOCnt();
+}
+function removeORow(id){ var t=document.getElementById('or-'+id); if(t)t.remove(); reNumORows(); calcOTotal(); updOCnt(); }
+function reNumORows(){ document.querySelectorAll('#o-tbody tr').forEach(function(tr,i){ var c=tr.querySelector('[id^="orn-"]'); if(c)c.textContent=i+1; }); }
+function updOCnt(){ var n=document.querySelectorAll('#o-tbody tr').length; document.getElementById('o-cnt').textContent=n+' sor'; }
+function calcORow(id) {
+  var tr=document.getElementById('or-'+id); if(!tr)return;
+  var ins=tr.querySelectorAll('input');
+  var qty=parseFloat(ins[3]?ins[3].value:0)||0;
+  var prc=parseFloat(ins[4]?ins[4].value:0)||0;
+  var tot=qty*prc;
+  var el=document.getElementById('ort-'+id);
+  if(el) el.value=tot>0?tot.toFixed(2):'';
+  calcOTotal();
+}
+function calcOTotal() {
+  var sum=0;
+  document.querySelectorAll('[id^="ort-"]').forEach(function(el){ sum+=parseFloat(el.value)||0; });
+  document.getElementById('o-tot').textContent=sum.toFixed(2);
+  document.getElementById('o-curl').textContent=document.getElementById('o-cur').value;
+  return sum;
+}
+function getORows() {
+  var items=[];
+  document.querySelectorAll('#o-tbody tr').forEach(function(tr){
+    var ins=tr.querySelectorAll('input'), sel=tr.querySelector('select');
+    var g=ins[0]?ins[0].value.trim():'', c=ins[1]?ins[1].value.trim():'',
+        d=ins[2]?ins[2].value.trim():'', q=ins[3]?ins[3].value.trim():'',
+        p=ins[4]?ins[4].value.trim():'', u=sel?sel.value:'pcs',
+        t=ins[5]?ins[5].value.trim():'';
+    if(g||c||d||q) items.push({group:g,code:c,desc:d,qty:q,unit:u,price:p,tot:t});
+  });
+  return items;
+}
+function autoOrderNo() {
+  var el=document.getElementById('o-num');
+  if (el&&!el.value) el.value='SE2026-'+String(orders.length+1).padStart(3,'0');
+}
+function saveOrder() {
+  var buy=document.getElementById('o-buy').value.trim();
+  var dat=document.getElementById('o-dat').value;
+  if (!buy){ toast('❗ Add meg a vevő nevét!','#c62828'); return; }
+  var items=getORows();
+  var sub=calcOTotal();
+  orders.unshift({
+    id:Date.now(), orderno:document.getElementById('o-num').value.trim(),
+    date:dat, recorder:document.getElementById('o-rec').value.trim(),
+    buyer:buy, contact:document.getElementById('o-con').value.trim(),
+    orszag:getOr('o-or','o-ore'), city:document.getElementById('o-cit').value.trim(),
+    email:document.getElementById('o-ema').value.trim(), phone:document.getElementById('o-pho').value.trim(),
+    address:document.getElementById('o-adr').value.trim(),
+    currency:document.getElementById('o-cur').value, subtotal:sub,
+    notes:document.getElementById('o-not').value.trim(), items:items
+  });
+  saveO(); toast('✓ Rendelés elmentve! ('+orders.length+'. rendelés)','#1565c0');
+  clearOrder();
+}
+function clearOrder() {
+  ['o-buy','o-con','o-cit','o-ema','o-pho','o-rec','o-not','o-adr'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('o-or').value=''; document.getElementById('o-ore').style.display='none'; document.getElementById('o-ore').value='';
+  document.getElementById('o-cur').value='EUR';
+  document.getElementById('o-tbody').innerHTML='';
+  oRowId=0; addORow(); addORow(); addORow(); calcOTotal(); reNumORows(); updOCnt();
+  autoOrderNo();
+}
+
+// ── ORDER LIST ─────────────────────────────────────────────────
+function renderOrderStats() {
+  var t=orders.length, tot=orders.reduce(function(s,o){return s+(parseFloat(o.subtotal)||0);},0), items=orders.reduce(function(s,o){return s+((o.items||[]).length);},0);
+  document.getElementById('o-stats').innerHTML=[
+    ['Rendelések',t,''],['Összes tétel',items,'gold'],['Összes érték',tot.toFixed(2),'blue']
+  ].map(function(s){ return '<div class="sc '+s[2]+'"><div class="v">'+s[1]+'</div><div class="l">'+s[0]+'</div></div>'; }).join('');
+}
+function renderOrders() {
+  renderOrderStats();
+  var q=(document.getElementById('o-srch').value||'').toLowerCase();
+  var rows=orders.filter(function(o){ return !q||[o.buyer,o.contact,o.orderno,o.orszag].join(' ').toLowerCase().includes(q); });
+  var body=document.getElementById('o-tbody-list'), empty=document.getElementById('o-empty');
+  if (!rows.length){ body.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  body.innerHTML=rows.map(function(o,i){
+    var isum=(o.items||[]).slice(0,3).map(function(it){ return '<span class="badge bb">'+esc(it.code||it.group||it.desc||'—')+'</span>'; }).join(' ');
+    if((o.items||[]).length>3) isum+=' <span style="font-size:11px;color:#888">+'+(o.items.length-3)+'</span>';
+    return '<tr>'
+      +'<td style="font-size:11px;color:#888;white-space:nowrap">'+(i+1)+'. '+(o.date||'').replace('2026-','')+'<br><span style="font-size:10px">'+esc(o.recorder||'')+'</span></td>'
+      +'<td style="font-weight:700;color:#1a1a2e">'+esc(o.orderno||'—')+'</td>'
+      +'<td style="font-weight:600">'+esc(o.buyer||'—')+'</td>'
+      +'<td><span class="badge bg">'+esc(o.orszag||'—')+'</span></td>'
+      +'<td>'+isum+'</td>'
+      +'<td style="font-weight:700;color:#1565c0">'+esc(String(parseFloat(o.subtotal||0).toFixed(2)))+' '+esc(o.currency||'')+'</td>'
+      +'<td><div class="acts">'
+        +'<button class="ab" onclick="openOrder('+o.id+')">👁</button>'
+        +'<button class="ab" onclick="openOrder('+o.id+',true)">✏️</button>'
+        +'<button class="ab" onclick="openOrderEmail('+o.id+')" style="color:#1565c0">✉️</button>'
+        +'<button class="ab" onclick="delOrder('+o.id+')" style="color:#e53935">🗑</button>'
+      +'</div></td></tr>';
+  }).join('');
+}
+function delOrder(id){ if(!confirm('Törli ezt a rendelést?')) return; orders=orders.filter(function(o){return o.id!==id;}); saveO(); renderOrders(); }
+function delAllOrders(){ if(!orders.length||!confirm('Töröl minden ('+orders.length+') rendelést?')) return; orders=[]; saveO(); renderOrders(); }
+function exportOrdersCSV() {
+  if (!orders.length){ toast('Nincs exportálható rendelés!','#c62828'); return; }
+  var csv='\uFEFF'+'Order No.;Date;Recorder;Buyer;Contact;Country;City;Email;Phone;Currency;Subtotal;Notes;Group;Code;Desc;Qty;Unit;Price;Total\n';
+  orders.forEach(function(o){
+    var base=[o.orderno,o.date,o.recorder,o.buyer,o.contact,o.orszag,o.city,o.email,o.phone,o.currency,o.subtotal,o.notes].map(function(v){return '"'+String(v||'').replace(/"/g,'""')+'"';}).join(';');
+    if(!(o.items||[]).length){ csv+=base+';;;;;;\n'; }
+    else { o.items.forEach(function(it){ csv+=base+';'+[it.group,it.code,it.desc,it.qty,it.unit,it.price,it.tot].map(function(v){return '"'+String(v||'').replace(/"/g,'""')+'"';}).join(';')+'\n'; }); }
+  });
+  dl(csv,'sacroexpo2026_orders_'+today()+'.csv');
+  toast('CSV letöltve!','#1565c0');
+}
+
+// ── ORDER MODAL ────────────────────────────────────────────────
+var omEditing=false;
+function openOrder(id, edit) {
+  omId=id; omEditing=false;
+  var o=norm(orders.find(function(x){return x.id===id;}));
+  if (!o) return;
+  document.getElementById('om-title').textContent=(o.orderno||'Rendelés')+' — '+o.buyer;
+  renderOView(o);
+  document.getElementById('om-view').style.display='block';
+  document.getElementById('om-edit').style.display='none';
+  document.getElementById('om-savebar').classList.remove('on');
+  document.getElementById('om-edit-btn').textContent='✏ Szerkesztés';
+  document.getElementById('om').classList.add('on');
+  if (edit) omToggleEdit();
+}
+function openOrderEmail(id) { omId=id; openEmail(); }
+function norm(o) {
+  if (!o) return null;
+  return Object.assign({items:[],orderno:'',date:'',recorder:'',buyer:'',contact:'',orszag:'',city:'',email:'',phone:'',currency:'EUR',notes:'',subtotal:0}, o);
+}
+function renderOView(o) {
+  var ith='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">'
+    +'<tr style="background:#f5f5f5"><th style="padding:6px 8px;text-align:left">Group</th><th style="padding:6px 8px">Code</th><th style="padding:6px 8px">Description</th><th style="padding:6px 8px;text-align:right">Qty</th><th style="padding:6px 8px">Unit</th><th style="padding:6px 8px;text-align:right">Price</th><th style="padding:6px 8px;text-align:right">Total</th></tr>'
+    +(o.items||[]).map(function(it){
+      return '<tr style="border-bottom:1px solid #f0f0f0">'
+        +'<td style="padding:5px 8px">'+esc(it.group||'')+'</td>'
+        +'<td style="padding:5px 8px;font-weight:700">'+esc(it.code||'')+'</td>'
+        +'<td style="padding:5px 8px">'+esc(it.desc||'')+'</td>'
+        +'<td style="padding:5px 8px;text-align:right">'+esc(String(it.qty||''))+'</td>'
+        +'<td style="padding:5px 8px">'+esc(it.unit||'')+'</td>'
+        +'<td style="padding:5px 8px;text-align:right">'+esc(String(it.price||''))+'</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-weight:700">'+esc(String(it.tot||''))+'</td>'
+        +'</tr>';
+    }).join('')
+    +'<tr style="background:#1a1a2e;color:#fff"><td colspan="6" style="padding:8px;text-align:right;font-weight:700">TOTAL</td><td style="padding:8px;text-align:right;font-weight:700;color:#f5e6a3">'+parseFloat(o.subtotal||0).toFixed(2)+' '+esc(o.currency)+'</td></tr>'
+    +'</table></div>';
+  document.getElementById('om-view').innerHTML=
+    drow('Order No.','<strong>'+esc(o.orderno)+'</strong>')+drow('Date',esc(o.date))+drow('Recorded by',esc(o.recorder))+'<hr class="div">'+
+    drow('Buyer','<strong>'+esc(o.buyer)+'</strong>')+drow('Contact',esc(o.contact))+drow('Country',esc(o.orszag))+drow('City',esc(o.city))+
+    drow('E-mail',o.email?'<a href="mailto:'+esc(o.email)+'">'+esc(o.email)+'</a>':'—')+drow('Phone',esc(o.phone))+'<hr class="div">'+
+    '<div style="margin-bottom:6px;font-size:11px;font-weight:700;color:#888;text-transform:uppercase">Items ('+(o.items||[]).length+')</div>'+ith+
+    (o.notes?'<hr class="div">'+drow('Notes',esc(o.notes)):'');
+}
+function omToggleEdit() {
+  var o=norm(orders.find(function(x){return x.id===omId;}));
+  if (!o) return;
+  omEditing=!omEditing;
+  document.getElementById('om-view').style.display=omEditing?'none':'block';
+  document.getElementById('om-edit').style.display=omEditing?'block':'none';
+  document.getElementById('om-savebar').classList.toggle('on',omEditing);
+  document.getElementById('om-edit-btn').textContent=omEditing?'👁 Megtekintés':'✏ Szerkesztés';
+  if (omEditing) renderOEdit(o);
+}
+function renderOEdit(o) {
+  oeRowId=0;
+  var cOpts=['Lengyelország','Olaszország','Magyarország','Szlovákia'];
+  var isC=o.orszag&&cOpts.indexOf(o.orszag)===-1;
+  var orH='<option value="">—</option>'+cOpts.map(function(c){return '<option'+(o.orszag===c?' selected':'')+'>'+c+'</option>';}).join('')+'<option value="__other"'+(isC?' selected':'')+'>🌍 Egyéb...</option>';
+  var curH=['EUR','PLN','HUF','USD'].map(function(c){return '<option'+(o.currency===c?' selected':'')+'>'+c+'</option>';}).join('');
+  document.getElementById('om-edit').innerHTML=
+    '<div class="egrid">'
+    +ef('Order Number','oe-num',o.orderno)+ef('Order Date','oe-dat',o.date,'date')
+    +ef('Buyer / Customer','oe-buy',o.buyer)+ef('Contact person','oe-con',o.contact)
+    +'<div class="ef-group"><label>Country</label><select id="oe-or" onchange="orChg(\'oe-or\',\'oe-ore\')">'+orH+'</select><input id="oe-ore" type="text" value="'+(isC?esc(o.orszag||''):'')+'" placeholder="Country..." style="border:1.5px solid #ddd;border-radius:7px;padding:8px;font-size:13px;width:100%;margin-top:5px;'+(isC?'':'display:none')+'"></div>'
+    +ef('City','oe-cit',o.city)+ef('E-mail','oe-ema',o.email)+ef('Phone','oe-pho',o.phone)+ef('Address','oe-adr',o.address||'')
+    +'<div class="ef-group"><label>Currency</label><select id="oe-cur" style="border:1.5px solid #ddd;border-radius:7px;padding:8px;font-size:13px;width:100%">'+curH+'</select></div>'
+    +ef('Recorded by','oe-rec',o.recorder)
+    +'</div>'
+    +'<div style="font-size:12px;font-weight:700;color:#555;text-transform:uppercase;margin-bottom:6px">Items</div>'
+    +'<div style="overflow-x:auto"><table class="oit"><thead><tr>'
+    +'<th style="width:28px">#</th><th style="min-width:120px">Product Group</th><th style="min-width:90px">Code</th>'
+    +'<th style="min-width:150px">Description</th><th style="width:60px">Qty</th><th style="width:65px">Unit</th>'
+    +'<th style="width:85px">Unit price</th><th style="width:85px">Total</th><th style="width:32px"></th>'
+    +'</tr></thead><tbody id="oe-tbody"></tbody></table></div>'
+    +'<button class="add-row" onclick="addOERow()" style="margin-top:8px">+ Add item</button>'
+    +'<div class="ef-group" style="margin-top:12px"><label>Notes</label><textarea id="oe-not" style="min-height:60px">'+esc(o.notes||'')+'</textarea></div>';
+  (o.items||[]).forEach(function(it){addOERow(it);});
+  if(!(o.items||[]).length){addOERow();addOERow();}
+}
+function ef(lbl,id,val,type){
+  return '<div class="ef-group"><label>'+lbl+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val||'')+'"'+(type==='date'?' min="2026-06-15" max="2026-06-17"':'')+'></div>';
+}
+function addOERow(it) {
+  oeRowId++; var id=oeRowId; it=it||{};
+  var uopts=['pcs','box','set','kg','m'].map(function(u){return '<option'+(it.unit===u?' selected':'')+'>'+u+'</option>';}).join('');
+  var tr=document.createElement('tr'); tr.id='oer-'+id;
+  tr.innerHTML='<td style="text-align:center;color:#aaa;font-size:11px" id="oern-'+id+'"></td>'
+    +'<td><input type="text" value="'+esc(it.group||'')+'" placeholder="Group..." oninput="calcOERow('+id+')" autocomplete="off"></td>'
+    +'<td><input type="text" value="'+esc(it.code||'')+'" placeholder="Code..." oninput="calcOERow('+id+')" autocomplete="off"></td>'
+    +'<td><input type="text" value="'+esc(it.desc||'')+'" placeholder="Description..." oninput="calcOERow('+id+')" autocomplete="off"></td>'
+    +'<td><input type="number" value="'+esc(String(it.qty||''))+'" min="0" step="1" placeholder="0" oninput="calcOERow('+id+')" style="text-align:right"></td>'
+    +'<td><select onchange="calcOERow('+id+')">'+uopts+'</select></td>'
+    +'<td><input type="number" value="'+esc(String(it.price||''))+'" min="0" step="0.01" placeholder="0.00" oninput="calcOERow('+id+')" style="text-align:right"></td>'
+    +'<td class="tot-cell"><input type="text" id="oert-'+id+'" value="'+esc(String(it.tot||''))+'" readonly></td>'
+    +'<td style="text-align:center"><button onclick="removeOERow('+id+')" style="background:none;border:none;color:#e53935;cursor:pointer;font-size:15px;padding:3px">✕</button></td>';
+  document.getElementById('oe-tbody').appendChild(tr);
+  reNumOERows();
+}
+function removeOERow(id){ var t=document.getElementById('oer-'+id); if(t)t.remove(); reNumOERows(); calcOETotal(); }
+function reNumOERows(){ document.querySelectorAll('#oe-tbody tr').forEach(function(tr,i){ var c=tr.querySelector('[id^="oern-"]'); if(c)c.textContent=i+1; }); }
+function calcOERow(id) {
+  var tr=document.getElementById('oer-'+id); if(!tr)return;
+  var ins=tr.querySelectorAll('input');
+  var qty=parseFloat(ins[3]?ins[3].value:0)||0, prc=parseFloat(ins[4]?ins[4].value:0)||0, tot=qty*prc;
+  var el=document.getElementById('oert-'+id); if(el) el.value=tot>0?tot.toFixed(2):'';
+  calcOETotal();
+}
+function calcOETotal() {
+  var sum=0; document.querySelectorAll('[id^="oert-"]').forEach(function(el){sum+=parseFloat(el.value)||0;}); return sum;
+}
+function omSave() {
+  var idx=orders.findIndex(function(x){return x.id===omId;}); if(idx===-1)return;
+  var o=orders[idx];
+  var items=[]; document.querySelectorAll('#oe-tbody tr').forEach(function(tr){
+    var ins=tr.querySelectorAll('input'),sel=tr.querySelector('select');
+    var g=ins[0]?ins[0].value.trim():'',c=ins[1]?ins[1].value.trim():'',d=ins[2]?ins[2].value.trim():'',
+        q=ins[3]?ins[3].value.trim():'',p=ins[4]?ins[4].value.trim():'',u=sel?sel.value:'pcs',t=ins[5]?ins[5].value.trim():'';
+    if(g||c||d||q) items.push({group:g,code:c,desc:d,qty:q,unit:u,price:p,tot:t});
+  });
+  o.orderno=document.getElementById('oe-num').value.trim();
+  o.date=document.getElementById('oe-dat').value;
+  o.buyer=document.getElementById('oe-buy').value.trim();
+  o.contact=document.getElementById('oe-con').value.trim();
+  o.orszag=getOr('oe-or','oe-ore');
+  o.city=document.getElementById('oe-cit').value.trim();
+  o.email=document.getElementById('oe-ema').value.trim();
+  o.phone=document.getElementById('oe-pho').value.trim();
+  o.address=document.getElementById('oe-adr').value.trim();
+  o.currency=document.getElementById('oe-cur').value;
+  o.recorder=document.getElementById('oe-rec').value.trim();
+  o.notes=document.getElementById('oe-not').value.trim();
+  o.items=items; o.subtotal=calcOETotal();
+  orders[idx]=o; saveO(); renderOrders();
+  omEditing=false;
+  document.getElementById('om-title').textContent=(o.orderno||'Rendelés')+' — '+o.buyer;
+  renderOView(norm(o));
+  document.getElementById('om-view').style.display='block';
+  document.getElementById('om-edit').style.display='none';
+  document.getElementById('om-savebar').classList.remove('on');
+  document.getElementById('om-edit-btn').textContent='✏ Szerkesztés';
+  toast('✓ Rendelés frissítve!','#2e7d32');
+}
+function omCancelEdit() {
+  omEditing=false;
+  var o=norm(orders.find(function(x){return x.id===omId;}));
+  if(o) renderOView(o);
+  document.getElementById('om-view').style.display='block';
+  document.getElementById('om-edit').style.display='none';
+  document.getElementById('om-savebar').classList.remove('on');
+  document.getElementById('om-edit-btn').textContent='✏ Szerkesztés';
+}
+
+// ── EMAIL ──────────────────────────────────────────────────────
+function openEmail() {
+  var o=norm(orders.find(function(x){return x.id===omId;}));
+  if (!o) return;
+  var maxG=12,maxC=10,maxD=20;
+  (o.items||[]).forEach(function(it){ if((it.group||'').length>maxG)maxG=(it.group||'').length; if((it.code||'').length>maxC)maxC=(it.code||'').length; if((it.desc||'').length>maxD)maxD=(it.desc||'').length; });
+  function pad(s,n){ s=String(s||''); return (s+'                    ').substring(0,n); }
+  var sep='-'.repeat(maxG+maxC+maxD+42);
+  var lines=[
+    'Dear '+(o.contact||o.buyer)+',','',
+    'Thank you for your order at SACROEXPO 2026 (Poland, June 15–17, 2026).','Please find your order confirmation below.','',
+    sep,'ORDER CONFIRMATION',sep,
+    'Order No. : '+(o.orderno||'—'),'Date      : '+(o.date||'—'),'','BUYER',
+    'Company   : '+o.buyer,'Contact   : '+o.contact,
+    'Country   : '+o.orszag+(o.city?', '+o.city:''),
+    'E-mail    : '+(o.email||'—'),'Phone     : '+(o.phone||'—'),'Address   : '+(o.address||'—'),'',sep,
+    pad('Product Group',maxG)+'  '+pad('Code',maxC)+'  '+pad('Description',maxD)+'  '+pad('Qty',5)+'  '+pad('Unit',5)+'  '+pad('Price',10)+'  Total',
+    sep
+  ];
+  (o.items||[]).forEach(function(it){
+    lines.push(pad(it.group,maxG)+'  '+pad(it.code,maxC)+'  '+pad(it.desc,maxD)+'  '+pad(it.qty,5)+'  '+pad(it.unit,5)+'  '+pad(it.price,10)+'  '+(it.tot||''));
+  });
+  lines.push(sep);
+  lines.push(pad('TOTAL',maxG+maxC+maxD+30)+'  '+parseFloat(o.subtotal||0).toFixed(2)+' '+o.currency);
+  if (o.notes){ lines.push(''); lines.push('Notes: '+o.notes); }
+  lines.push('',sep,'','If you have any questions, please do not hesitate to contact us.','','Best regards,');
+  if(o.recorder) lines.push(o.recorder);
+  lines.push('SACROEXPO 2026 Team');
+  document.getElementById('em-to').value=o.email||'';
+  document.getElementById('em-sub').value='Order Confirmation — '+(o.orderno||'')+' / '+o.buyer;
+  document.getElementById('em-body').value=lines.join('\n');
+  document.getElementById('em').classList.add('on');
+}
+function copyEmail() {
+  var ta=document.getElementById('em-body'); ta.select(); document.execCommand('copy');
+  toast('📋 Szöveg másolva vágólapra!','#1565c0');
+}
+function sendEmail() {
+  var to=document.getElementById('em-to').value;
+  var sub=encodeURIComponent(document.getElementById('em-sub').value);
+  var body=encodeURIComponent(document.getElementById('em-body').value);
+  var ml='mailto:'+to+'?subject='+sub+'&body='+body;
+  if(ml.length>2000){ toast('⚠ Szöveg túl hosszú — használd a Másolás gombot!','#e65100'); return; }
+  window.location.href=ml;
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function today(){ return new Date().toISOString().slice(0,10); }
+function dl(csv, fn) {
+  var b=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=fn; a.click();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+load();
+// Set today's date if within expo range
+(function(){
+  var t=today();
+  ['f-dat','o-dat'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.value=(t>='2026-06-15'&&t<='2026-06-17')?t:'2026-06-15';
+  });
+  // Hide all pages except form
+  document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+  document.getElementById('pg-form').style.display='block';
+  // Init order form
+  addORow(); addORow(); addORow(); autoOrderNo();
+  // Close modals on bg click
+  ['cm','om','em'].forEach(function(id){
+    document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) closeModal(id); });
+  });
+})();
+</script>
+</body>
+</html>
