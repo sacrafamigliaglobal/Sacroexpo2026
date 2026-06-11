@@ -2,6 +2,28 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sacroexpo 2026">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1a2e">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a1a2e' rx='20'/><text y='68' x='50' text-anchor='middle' font-size='55'>⛪</text></svg>">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    // Inline service worker via blob
+    var swCode = [
+      "const CACHE = 'sacroexpo2026-v1';",
+      "self.addEventListener('install', e => { self.skipWaiting(); });",
+      "self.addEventListener('activate', e => { self.clients.claim(); });",
+      "self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });"
+    ].join('\n');
+    var blob = new Blob([swCode], {type: 'application/javascript'});
+    var swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(function(){});
+  });
+}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sacroexpo 2026</title>
 <style>
@@ -119,19 +141,24 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
 .nkprev img{max-height:80px;border-radius:6px;border:1px solid #ddd;margin-right:8px}
 @media(max-width:500px){.cgrid{grid-template-columns:1fr}.ci.wide{grid-column:span 1}.egrid{grid-template-columns:1fr}}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
 <div class="hdr">
   <div>
     <h1>⛪ SACROEXPO 2026 — POLSKA</h1>
-    <div class="sub">Expo Poland · 2026.06.15–17 · Látogatói adatrögzítő</div>
+    <div class="sub">Expo Poland · 2026.06.15–17 · Visitor Data Collection</div>
   </div>
+  <div style="display:flex;align-items:center;gap:12px">
+  <span id="sync-status" style="font-size:11px;color:#b8960c">⏳ Connecting...</span>
   <div class="tabs">
-    <button class="tb on" onclick="go('form')">✏ Adatlap</button>
-    <button class="tb" onclick="go('order')">🛒 Rendelés</button>
-    <button class="tb" onclick="go('list')">📋 Látogatók</button>
-    <button class="tb" onclick="go('orders')">📦 Rendelések</button>
+    <button class="tb on" onclick="go('form')">✏ Visitor Form</button>
+    <button class="tb" onclick="go('order')">🛒 Order</button>
+    <button class="tb" onclick="go('list')">📋 Visitors</button>
+    <button class="tb" onclick="go('orders')">📦 Orders</button>
+  </div>
   </div>
 </div>
 
@@ -140,15 +167,21 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
 <div class="wrap">
 
   <div class="card">
-    <div class="sh dark">① Kitöltési adatok</div>
+    <div class="sh dark">① Recorded by</div>
     <div class="fb">
       <div class="row">
         <div class="fg" style="flex:2">
-          <label>Kitöltő neve *</label>
-          <input id="f-kit" type="text" placeholder="Munkatárs neve..." autocomplete="off">
+          <label>Recorded by *</label>
+          <select id="f-kit">
+            <option value="">— select —</option>
+            <option value="Ági">Ági</option>
+            <option value="Laci">Laci</option>
+            <option value="Robi">Robi</option>
+            <option value="Magdi">Magdi</option>
+          </select>
         </div>
         <div class="fg" style="flex:1;min-width:130px">
-          <label>Dátum *</label>
+          <label>Date *</label>
           <input id="f-dat" type="date" min="2026-06-15" max="2026-06-17">
         </div>
       </div>
@@ -156,74 +189,91 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
   </div>
 
   <div class="card">
-    <div class="sh green">② Érdeklődés típusa</div>
+    <div class="sh green">② Interest</div>
     <div class="fb">
       <div class="cgrid">
-        <label class="ci" id="ci1"><input type="checkbox" id="f-kat" onchange="toggleCI('ci1',this)"><span>📚 Katalógus</span></label>
-        <label class="ci" id="ci2"><input type="checkbox" id="f-nk" onchange="toggleCI('ci2',this)"><span>📦 Nagyker árlista</span></label>
-        <label class="ci" id="ci3"><input type="checkbox" id="f-kk" onchange="toggleCI('ci3',this)"><span>🏪 Kisker árlista</span></label>
+        <label class="ci" id="ci1"><input type="checkbox" id="f-kat" onchange="toggleCI('ci1',this)"><span>📚 Catalogue</span></label>
+        <label class="ci" id="ci2"><input type="checkbox" id="f-nk" onchange="toggleCI('ci2',this)"><span>📦 Wholesale price list</span></label>
+        <label class="ci" id="ci3"><input type="checkbox" id="f-kk" onchange="toggleCI('ci3',this)"><span>🏪 Retail price list</span></label>
         <label class="ci wide" id="ci4" onclick="event.stopPropagation()">
           <input type="checkbox" id="f-eo" onchange="toggleCI('ci4',this)">
-          <span style="white-space:nowrap">Egyéb:</span>
-          <input type="text" id="f-et" placeholder="leírás..." onclick="event.stopPropagation()">
+          <span style="white-space:nowrap">Other:</span>
+          <input type="text" id="f-et" placeholder="description..." onclick="event.stopPropagation()">
         </label>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="sh dark">③ Cég / partner adatai</div>
+    <div class="sh dark">③ Company / Partner details</div>
     <div class="fb">
       <div class="row">
-        <div class="fg" style="flex:2"><label>Cég neve</label><input id="f-ceg" type="text" placeholder="Cég neve..." autocomplete="off"></div>
+        <div class="fg" style="flex:2"><label>Company name</label><input id="f-ceg" type="text" placeholder="Company name..." autocomplete="off"></div>
         <div class="fg" style="flex:1;min-width:150px">
-          <label>Ország</label>
+          <label>Country</label>
           <select id="f-or" onchange="orChg('f-or','f-ore')">
-            <option value="">— válassz —</option>
-            <option value="Lengyelország">🇵🇱 Lengyelország</option>
-            <option value="Olaszország">🇮🇹 Olaszország</option>
-            <option value="Magyarország">🇭🇺 Magyarország</option>
-            <option value="Szlovákia">🇸🇰 Szlovákia</option>
-            <option value="__other">🌍 Egyéb...</option>
+            <option value="">— select —</option>
+            <option value="Poland">🇵🇱 Poland</option>
+            <option value="Italy">🇮🇹 Italy</option>
+            <option value="Hungary">🇭🇺 Hungary</option>
+            <option value="Slovakia">🇸🇰 Slovakia</option>
+            <option value="Slovenia">🇸🇮 Slovenia</option>
+            <option value="Czech Republic">🇨🇿 Czech Republic</option>
+            <option value="Ukraine">🇺🇦 Ukraine</option>
+            <option value="Germany">🇩🇪 Germany</option>
+            <option value="Belgium">🇧🇪 Belgium</option>
+            <option value="Spain">🇪🇸 Spain</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="Ireland">🇮🇪 Ireland</option>
+            <option value="__other">🌍 Other...</option>
           </select>
-          <input id="f-ore" type="text" placeholder="Ország neve..." style="display:none;margin-top:6px">
+          <input id="f-ore" type="text" placeholder="Country name..." style="display:none;margin-top:6px">
         </div>
       </div>
       <div class="row">
-        <div class="fg"><label>Régió / Város</label><input id="f-var" type="text" placeholder="pl. Varsó..." autocomplete="off"></div>
-        <div class="fg"><label>Kontakt neve</label><input id="f-kon" type="text" placeholder="Kontakt személy..." autocomplete="off"></div>
+        <div class="fg"><label>Region / City</label><input id="f-var" type="text" placeholder="e.g. Warsaw..." autocomplete="off"></div>
+        <div class="fg"><label>Contact name</label><input id="f-kon" type="text" placeholder="Contact person..." autocomplete="off"></div>
       </div>
       <div class="row">
-        <div class="fg"><label>E-mail</label><input id="f-ema" type="email" placeholder="email@domain.com" autocomplete="off"></div>
-        <div class="fg"><label>Telefon</label><input id="f-tel" type="tel" placeholder="+48..." autocomplete="off"></div>
+        <div class="fg"><label>E-mail 1</label><input id="f-ema" type="email" placeholder="email@domain.com" autocomplete="off"></div>
+        <div class="fg"><label>E-mail 2</label><input id="f-ema2" type="email" placeholder="email2@domain.com" autocomplete="off"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label>Phone</label><input id="f-tel" type="tel" placeholder="+48..." autocomplete="off"></div>
+        <div class="fg" style="justify-content:flex-end;padding-top:18px">
+          <label class="ci" id="ci-ord" style="border-color:#1565c0;background:#e3f2fd" onclick="event.stopPropagation()">
+            <input type="checkbox" id="f-ord" onchange="toggleCI('ci-ord',this)" style="accent-color:#1565c0">
+            <span style="color:#1565c0">🛒 Order placed</span>
+          </label>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="sh orange">④ Megjegyzés & egyéb</div>
+    <div class="sh orange">④ Notes & other</div>
     <div class="fb">
-      <div class="fg" style="margin-bottom:12px"><label>Egyéb adat</label><input id="f-egy" type="text" placeholder="Pl. weblap, referencia..." autocomplete="off"></div>
-      <div class="fg"><label>Megjegyzés / kérés</label><textarea id="f-meg" placeholder="Szabad megjegyzés..."></textarea></div>
+      <div class="fg" style="margin-bottom:12px"><label>Other info</label><input id="f-egy" type="text" placeholder="e.g. website, reference..." autocomplete="off"></div>
+      <div class="fg"><label>Notes / request</label><textarea id="f-meg" placeholder="Free text notes..."></textarea></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="sh gray">⑤ Névjegykártya fotó</div>
+    <div class="sh gray">⑤ Business card photo</div>
     <div class="fb">
       <div class="nk" id="nk-area" onclick="document.getElementById('nk-in').click()">
         <div id="nk-disp">
           <div style="font-size:32px;margin-bottom:6px">📷</div>
-          <p style="font-size:13px;color:#888">Kattints ide a névjegykártya lefotózásához / feltöltéséhez</p>
+          <p style="font-size:13px;color:#888">Tap here to take / upload business card photo</p>
         </div>
       </div>
       <input type="file" id="nk-in" accept="image/*" capture="environment" style="display:none" onchange="nkLoad(this)">
-      <button class="btn-clear" id="nk-clr" style="display:none" onclick="nkClear()">✕ Névjegykártya törlése</button>
+      <button class="btn-clear" id="nk-clr" style="display:none" onclick="nkClear()">✕ Remove photo</button>
     </div>
   </div>
 
-  <button class="btn-save" onclick="saveContact()">✓ Mentés és következő látogató</button>
-  <button class="btn-clear" onclick="clearContact()">✕ Mezők törlése</button>
+  <button class="btn-save" onclick="saveContact()">✓ Save & next visitor</button>
+  <button class="btn-clear" onclick="clearContact()">✕ Clear form</button>
 
 </div>
 </div>
@@ -243,12 +293,20 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
             <div class="fg">
               <label>Country</label>
               <select id="o-or" onchange="orChg('o-or','o-ore')">
-                <option value="">— select —</option>
-                <option value="Lengyelország">🇵🇱 Poland</option>
-                <option value="Olaszország">🇮🇹 Italy</option>
-                <option value="Magyarország">🇭🇺 Hungary</option>
-                <option value="Szlovákia">🇸🇰 Slovakia</option>
-                <option value="__other">🌍 Other...</option>
+<option value="">— select —</option>
+            <option value="Poland">🇵🇱 Poland</option>
+            <option value="Italy">🇮🇹 Italy</option>
+            <option value="Hungary">🇭🇺 Hungary</option>
+            <option value="Slovakia">🇸🇰 Slovakia</option>
+            <option value="Slovenia">🇸🇮 Slovenia</option>
+            <option value="Czech Republic">🇨🇿 Czech Republic</option>
+            <option value="Ukraine">🇺🇦 Ukraine</option>
+            <option value="Germany">🇩🇪 Germany</option>
+            <option value="Belgium">🇧🇪 Belgium</option>
+            <option value="Spain">🇪🇸 Spain</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="Ireland">🇮🇪 Ireland</option>
+            <option value="__other">🌍 Other...</option>
               </select>
               <input id="o-ore" type="text" placeholder="Country name..." style="display:none;margin-top:6px">
             </div>
@@ -321,26 +379,26 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
   <div class="sgrid" id="c-stats"></div>
   <div class="twrap">
     <div class="ttbar">
-      <input type="text" placeholder="🔍 Keresés..." id="c-srch" oninput="renderContacts()">
-      <button class="tbtn" onclick="exportContactsCSV()">⬇ CSV</button>
-      <button class="tbtn" id="btn-zip" onclick="exportNKZip()" style="background:#2e7d32;display:none">📷 Képek ZIP</button>
+      <input type="text" placeholder="🔍 Search..." id="c-srch" oninput="renderContacts()">
+      <button class="tbtn" onclick="exportContactsCSV()">⬇ Export CSV</button>
+      <button class="tbtn" id="btn-zip" onclick="exportNKZip()" style="background:#2e7d32;display:none">📷 Photos ZIP</button>
     </div>
     <div style="overflow-x:auto">
       <table class="tbl">
         <thead><tr>
-          <th onclick="cSort('datum')">#  Dátum ↕</th>
-          <th onclick="cSort('ceg')">Cég ↕</th>
-          <th onclick="cSort('kontakt')">Kontakt ↕</th>
-          <th onclick="cSort('orszag')">Ország ↕</th>
-          <th>Érdeklődés</th>
+          <th onclick="cSort('datum')">#  Date ↕</th>
+          <th onclick="cSort('ceg')">Company ↕</th>
+          <th onclick="cSort('kontakt')">Contact ↕</th>
+          <th onclick="cSort('orszag')">Country ↕</th>
+          <th>Interest</th>
           <th>Email / Tel</th>
-          <th>Megjegyzés</th>
-          <th style="width:100px;text-align:center">Műveletek</th>
+          <th>Notes</th>
+          <th style="width:100px;text-align:center">Actions</th>
         </tr></thead>
         <tbody id="c-tbody"></tbody>
       </table>
     </div>
-    <div id="c-empty" class="empty" style="display:none"><div class="bi">📋</div><p>Még nincs rögzített látogató.</p></div>
+    <div id="c-empty" class="empty" style="display:none"><div class="bi">📋</div><p>No visitors recorded yet.</p></div>
   </div>
 </div>
 </div>
@@ -351,24 +409,24 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
   <div class="sgrid" id="o-stats"></div>
   <div class="twrap">
     <div class="ttbar">
-      <input type="text" placeholder="🔍 Keresés..." id="o-srch" oninput="renderOrders()">
-      <button class="tbtn" onclick="exportOrdersCSV()">⬇ CSV</button>
+      <input type="text" placeholder="🔍 Search..." id="o-srch" oninput="renderOrders()">
+      <button class="tbtn" onclick="exportOrdersCSV()">⬇ Export CSV</button>
     </div>
     <div style="overflow-x:auto">
       <table class="tbl">
         <thead><tr>
-          <th>Dátum</th>
-          <th>Rendelési sz.</th>
-          <th>Vevő</th>
-          <th>Ország</th>
-          <th>Tételek</th>
-          <th>Összeg</th>
-          <th style="width:130px;text-align:center">Műveletek</th>
+          <th>Date</th>
+          <th>Order No.</th>
+          <th>Buyer</th>
+          <th>Country</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th style="width:130px;text-align:center">Actions</th>
         </tr></thead>
         <tbody id="o-tbody-list"></tbody>
       </table>
     </div>
-    <div id="o-empty" class="empty" style="display:none"><div class="bi">🛒</div><p>Még nincs rögzített rendelés.</p></div>
+    <div id="o-empty" class="empty" style="display:none"><div class="bi">🛒</div><p>No orders recorded yet.</p></div>
   </div>
 </div>
 </div>
@@ -379,15 +437,15 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
     <div class="mh">
       <h3 id="cm-title">Látogató</h3>
       <div class="mh-btns">
-        <button class="mhb" id="cm-edit-btn" onclick="cmToggleEdit()">✏ Szerkesztés</button>
+        <button class="mhb" id="cm-edit-btn" onclick="cmToggleEdit()">✏ Edit</button>
         <button class="mhb close" onclick="closeModal('cm')">✕</button>
       </div>
     </div>
     <div id="cm-view" class="mbody"></div>
     <div id="cm-edit" style="display:none;padding:18px"></div>
     <div class="msavebar" id="cm-savebar">
-      <button class="msave" onclick="cmSave()">✓ Mentés</button>
-      <button class="mcancel" onclick="cmCancelEdit()">Mégsem</button>
+      <button class="msave" onclick="cmSave()">✓ Save</button>
+      <button class="mcancel" onclick="cmCancelEdit()">Cancel</button>
     </div>
   </div>
 </div>
@@ -398,7 +456,7 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
     <div class="mh">
       <h3 id="om-title">Rendelés</h3>
       <div class="mh-btns">
-        <button class="mhb" id="om-edit-btn" onclick="omToggleEdit()">✏ Szerkesztés</button>
+        <button class="mhb" id="om-edit-btn" onclick="omToggleEdit()">✏ Edit</button>
         <button class="mhb gold" onclick="openEmail()">✉ E-mail</button>
         <button class="mhb close" onclick="closeModal('om')">✕</button>
       </div>
@@ -406,8 +464,8 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
     <div id="om-view" class="mbody"></div>
     <div id="om-edit" style="display:none;padding:18px"></div>
     <div class="msavebar" id="om-savebar">
-      <button class="msave" onclick="omSave()">✓ Mentés</button>
-      <button class="mcancel" onclick="omCancelEdit()">Mégsem</button>
+      <button class="msave" onclick="omSave()">✓ Save</button>
+      <button class="mcancel" onclick="omCancelEdit()">Cancel</button>
     </div>
   </div>
 </div>
@@ -418,8 +476,8 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
     <div class="mh blue">
       <h3>✉ E-mail visszaigazolás</h3>
       <div class="mh-btns">
-        <button class="mhb" onclick="copyEmail()">📋 Másolás</button>
-        <button class="mhb gold" onclick="sendEmail()">📧 Megnyit</button>
+        <button class="mhb" onclick="copyEmail()">📋 Copy</button>
+        <button class="mhb gold" onclick="sendEmail()">📧 Open in Mail</button>
         <button class="mhb close" onclick="closeModal('em')">✕</button>
       </div>
     </div>
@@ -439,6 +497,19 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
 <div class="toast" id="toast"></div>
 
 <script>
+// ── FIREBASE CONFIG ───────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyA0sx8zRfUQv65tAssavG0KCZav0d1KUJk",
+  authDomain: "sacroexpo2026.firebaseapp.com",
+  databaseURL: "https://sacroexpo2026-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "sacroexpo2026",
+  storageBucket: "sacroexpo2026.firebasestorage.app",
+  messagingSenderId: "519225164468",
+  appId: "1:519225164468:web:13163f05a3a6e4b916cde1"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.database();
+
 // ── DATA ──────────────────────────────────────────────────────
 var contacts = [];
 var orders   = [];
@@ -446,13 +517,48 @@ var cSortKey = 'datum', cSortDir = 1;
 var nkData   = null;
 var cmId = null, omId = null;
 var oRowId = 0, oeRowId = 0;
+var fbReady  = false;
 
 function load() {
-  try { contacts = JSON.parse(localStorage.getItem('sc26_c')||'[]'); } catch(e){contacts=[];}
-  try { orders   = JSON.parse(localStorage.getItem('sc26_o')||'[]'); } catch(e){orders=[];}
+  // Load from Firebase (realtime)
+  showSyncStatus('connecting');
+  db.ref('contacts').on('value', function(snap) {
+    contacts = [];
+    snap.forEach(function(child) { contacts.push(child.val()); });
+    contacts.sort(function(a,b){ return (b.id||0)-(a.id||0); });
+    fbReady = true;
+    showSyncStatus('ok');
+    if (document.getElementById('pg-list').style.display !== 'none') { renderContacts(); renderContactStats(); }
+  }, function(err) { showSyncStatus('error'); });
+
+  db.ref('orders').on('value', function(snap) {
+    orders = [];
+    snap.forEach(function(child) { orders.push(child.val()); });
+    orders.sort(function(a,b){ return (b.id||0)-(a.id||0); });
+    if (document.getElementById('pg-orders').style.display !== 'none') { renderOrders(); renderOrderStats(); }
+  }, function(err) { console.error('Orders sync error', err); });
 }
-function saveC() { localStorage.setItem('sc26_c', JSON.stringify(contacts)); }
-function saveO() { localStorage.setItem('sc26_o', JSON.stringify(orders)); }
+
+function saveC() {
+  // Save all contacts to Firebase
+  var obj = {};
+  contacts.forEach(function(c) { obj['c_'+c.id] = c; });
+  db.ref('contacts').set(obj);
+}
+
+function saveO() {
+  var obj = {};
+  orders.forEach(function(o) { obj['o_'+o.id] = o; });
+  db.ref('orders').set(obj);
+}
+
+function showSyncStatus(state) {
+  var el = document.getElementById('sync-status');
+  if (!el) return;
+  if (state === 'connecting') { el.textContent = '⏳ Connecting...'; el.style.color = '#b8960c'; }
+  else if (state === 'ok')    { el.textContent = '✓ Synced'; el.style.color = '#4caf50'; }
+  else if (state === 'error') { el.textContent = '✗ Offline'; el.style.color = '#e53935'; }
+}
 
 // ── TAB SWITCHING ─────────────────────────────────────────────
 function go(pg) {
@@ -512,7 +618,7 @@ function nkLoad(inp) {
 function nkClear() {
   nkData=null; document.getElementById('nk-in').value='';
   document.getElementById('nk-area').classList.remove('has');
-  document.getElementById('nk-disp').innerHTML='<div style="font-size:32px;margin-bottom:6px">📷</div><p style="font-size:13px;color:#888">Kattints ide a névjegykártya lefotózásához / feltöltéséhez</p>';
+  document.getElementById('nk-disp').innerHTML='<div style="font-size:32px;margin-bottom:6px">📷</div><p style="font-size:13px;color:#888">Tap here to take / upload business card photo</p>';
   document.getElementById('nk-clr').style.display='none';
 }
 
@@ -520,8 +626,8 @@ function nkClear() {
 function saveContact() {
   var kit=document.getElementById('f-kit').value.trim();
   var dat=document.getElementById('f-dat').value;
-  if (!kit) { toast('❗ Add meg a kitöltő nevét!','#c62828'); return; }
-  if (!dat) { toast('❗ Add meg a dátumot!','#c62828'); return; }
+  if (!kit) { toast('❗ Please select recorder name!','#c62828'); return; }
+  if (!dat) { toast('❗ Please select the date!','#c62828'); return; }
   var erd=[];
   if (document.getElementById('f-kat').checked) erd.push('Katalógus');
   if (document.getElementById('f-nk').checked)  erd.push('Nagyker árlista');
@@ -535,19 +641,22 @@ function saveContact() {
     varos:document.getElementById('f-var').value.trim(),
     kontakt:document.getElementById('f-kon').value.trim(),
     email:document.getElementById('f-ema').value.trim(),
+    email2:document.getElementById('f-ema2').value.trim(),
     telefon:document.getElementById('f-tel').value.trim(),
     egyeb:document.getElementById('f-egy').value.trim(),
     megj:document.getElementById('f-meg').value.trim(),
+    order_placed:document.getElementById('f-ord').checked,
     erdeklodes:erd, nk:nkData
   });
   saveC();
-  toast('✓ Elmentve! ('+contacts.length+'. látogató)');
+  toast('✓ Saved! (visitor #'+contacts.length+')');
   clearContact();
 }
 function clearContact() {
-  ['f-kit','f-ceg','f-var','f-kon','f-ema','f-tel','f-egy','f-meg','f-et'].forEach(function(id){ document.getElementById(id).value=''; });
-  ['f-kat','f-nk','f-kk','f-eo'].forEach(function(id){ document.getElementById(id).checked=false; });
-  ['ci1','ci2','ci3','ci4'].forEach(function(id){ document.getElementById(id).classList.remove('on'); });
+  ['f-ceg','f-var','f-kon','f-ema','f-ema2','f-tel','f-egy','f-meg','f-et'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('f-kit').value='';
+  ['f-kat','f-nk','f-kk','f-eo','f-ord'].forEach(function(id){ document.getElementById(id).checked=false; });
+  ['ci1','ci2','ci3','ci4','ci-ord'].forEach(function(id){ document.getElementById(id).classList.remove('on'); });
   document.getElementById('f-or').value=''; document.getElementById('f-ore').style.display='none'; document.getElementById('f-ore').value='';
   nkClear();
   document.getElementById('f-kit').focus();
@@ -563,14 +672,18 @@ function renderContactStats() {
     if(c.nk) nkc++;
   });
   document.getElementById('c-stats').innerHTML=[
-    ['Összes látogató',t,''],['Katalógus kért',kat,'green'],
-    ['Nagyker árlista',nk,'gold'],['Kisker árlista',kk,'gold'],['Névjegykártyával',nkc,'green']
+    ['Total visitors',t,''],['Catalogue',kat,'green'],
+    ['Wholesale list',nk,'gold'],['Retail list',kk,'gold'],['Business cards',nkc,'green']
   ].map(function(s){ return '<div class="sc '+s[2]+'"><div class="v">'+s[1]+'</div><div class="l">'+s[0]+'</div></div>'; }).join('');
   var zipBtn=document.getElementById('btn-zip');
   if(zipBtn) zipBtn.style.display=nkc>0?'inline-block':'none';
 }
 function cSort(k){ if(cSortKey===k) cSortDir*=-1; else{cSortKey=k;cSortDir=1;} renderContacts(); }
 function renderContacts() {
+  if (!fbReady) {
+    document.getElementById('c-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:30px;color:#888">⏳ Loading data...</td></tr>';
+    return;
+  }
   renderContactStats();
   var q=(document.getElementById('c-srch').value||'').toLowerCase();
   var rows=contacts.filter(function(c){ return !q||[c.ceg,c.kontakt,c.email,c.orszag,c.varos].join(' ').toLowerCase().includes(q); });
@@ -583,7 +696,7 @@ function renderContacts() {
     return '<tr>'
       +'<td style="font-size:11px;color:#888;white-space:nowrap">'+(i+1)+'. '+(c.datum||'').replace('2026-','')+'<br><span style="font-size:10px">'+esc(c.kitolto||'')+'</span></td>'
       +'<td style="font-weight:600;color:#1a1a2e">'+esc(c.ceg||'—')+'</td>'
-      +'<td>'+esc(c.kontakt||'—')+'</td>'
+      +'<td>'+esc(c.kontakt||'—')+(c.order_placed?'<br><span class="badge" style="background:#e3f2fd;color:#1565c0">🛒 Order</span>':'')+'</td>'
       +'<td><span class="badge bg">'+esc(c.orszag||'—')+'</span></td>'
       +'<td>'+badges+'</td>'
       +'<td style="font-size:12px">'+esc(c.email||'')+(c.email&&c.telefon?'<br>':'')+'<span style="color:#888">'+esc(c.telefon||'')+'</span></td>'
@@ -596,32 +709,32 @@ function renderContacts() {
       +'</div></td></tr>';
   }).join('');
 }
-function delContact(id){ if(!confirm('Törli ezt a bejegyzést?')) return; contacts=contacts.filter(function(c){return c.id!==id;}); saveC(); renderContacts(); }
-function delAllContacts(){ if(!contacts.length||!confirm('Töröl minden ('+contacts.length+') látogatót?')) return; contacts=[]; saveC(); renderContacts(); }
+function delContact(id){ if(!confirm('Delete this record?')) return; contacts=contacts.filter(function(c){return c.id!==id;}); saveC(); renderContacts(); }
+function delAllContacts(){ if(!contacts.length||!confirm('Delete all ('+contacts.length+') visitors?')) return; contacts=[]; saveC(); renderContacts(); }
 function exportContactsCSV() {
-  if (!contacts.length){ toast('Nincs exportálható adat!','#c62828'); return; }
+  if (!contacts.length){ toast('No data to export!','#c62828'); return; }
   var cols=['datum','kitolto','ceg','orszag','varos','kontakt','email','telefon','erdeklodes','egyeb','megj'];
   var hdrs=['Dátum','Kitöltő','Cég','Ország','Város','Kontakt','Email','Telefon','Érdeklődés','Egyéb','Megjegyzés'];
   var csv='\uFEFF'+hdrs.join(';')+'\n';
   contacts.forEach(function(c){ csv+=cols.map(function(k){ var v=k==='erdeklodes'?(c[k]||[]).join(', '):(c[k]||''); return '"'+String(v).replace(/"/g,'""')+'"'; }).join(';')+'\n'; });
   dl(csv,'sacroexpo2026_contacts_'+today()+'.csv');
-  toast('CSV letöltve!','#1565c0');
+  toast('CSV downloaded!','#1565c0');
 }
 
 function exportNKZip() {
   var withNK = contacts.filter(function(c){ return c.nk; });
-  if (!withNK.length){ toast('Nincs névjegykártya fotó!','#c62828'); return; }
+  if (!withNK.length){ toast('No business card photos!','#c62828'); return; }
   // Download images one by one with a short delay
   var i=0;
   function next() {
-    if (i>=withNK.length) { toast('✓ '+withNK.length+' kép letöltve!','#2e7d32'); return; }
+    if (i>=withNK.length) { toast('✓ '+withNK.length+' photos downloaded!','#2e7d32'); return; }
     var c=withNK[i];
     var name = sanitizeFilename((c.ceg||c.kontakt||'ismeretlen')+'_'+(c.datum||'').replace(/-/g,'')+'_'+i)+ getExt(c.nk);
     var a=document.createElement('a');
     a.href=c.nk; a.download=name; a.click();
     i++; setTimeout(next, 400);
   }
-  toast('⏳ Képek letöltése... ('+withNK.length+' db)','#1565c0');
+  toast('⏳ Downloading photos... ('+withNK.length+')','#1565c0');
   setTimeout(next, 300);
 }
 
@@ -645,7 +758,7 @@ function openContact(id, edit) {
   document.getElementById('cm-view').style.display='block';
   document.getElementById('cm-edit').style.display='none';
   document.getElementById('cm-savebar').classList.remove('on');
-  document.getElementById('cm-edit-btn').textContent='✏ Szerkesztés';
+  document.getElementById('cm-edit-btn').textContent='✏ Edit';
   document.getElementById('cm').classList.add('on');
   if (edit) cmToggleEdit();
 }
@@ -718,8 +831,8 @@ function cmSave() {
   document.getElementById('cm-view').style.display='block';
   document.getElementById('cm-edit').style.display='none';
   document.getElementById('cm-savebar').classList.remove('on');
-  document.getElementById('cm-edit-btn').textContent='✏ Szerkesztés';
-  toast('✓ Módosítás elmentve!');
+  document.getElementById('cm-edit-btn').textContent='✏ Edit';
+  toast('✓ Changes saved!');
 }
 function cmCancelEdit() {
   cmEditing=false;
@@ -728,7 +841,7 @@ function cmCancelEdit() {
   document.getElementById('cm-view').style.display='block';
   document.getElementById('cm-edit').style.display='none';
   document.getElementById('cm-savebar').classList.remove('on');
-  document.getElementById('cm-edit-btn').textContent='✏ Szerkesztés';
+  document.getElementById('cm-edit-btn').textContent='✏ Edit';
 }
 
 // ── ORDER FORM ─────────────────────────────────────────────────
@@ -789,7 +902,7 @@ function autoOrderNo() {
 function saveOrder() {
   var buy=document.getElementById('o-buy').value.trim();
   var dat=document.getElementById('o-dat').value;
-  if (!buy){ toast('❗ Add meg a vevő nevét!','#c62828'); return; }
+  if (!buy){ toast('❗ Please enter buyer name!','#c62828'); return; }
   var items=getORows();
   var sub=calcOTotal();
   orders.unshift({
@@ -802,7 +915,7 @@ function saveOrder() {
     currency:document.getElementById('o-cur').value, subtotal:sub,
     notes:document.getElementById('o-not').value.trim(), items:items
   });
-  saveO(); toast('✓ Rendelés elmentve! ('+orders.length+'. rendelés)','#1565c0');
+  saveO(); toast('✓ Order saved! (#'+orders.length+')','#1565c0');
   clearOrder();
 }
 function clearOrder() {
@@ -818,7 +931,7 @@ function clearOrder() {
 function renderOrderStats() {
   var t=orders.length, tot=orders.reduce(function(s,o){return s+(parseFloat(o.subtotal)||0);},0), items=orders.reduce(function(s,o){return s+((o.items||[]).length);},0);
   document.getElementById('o-stats').innerHTML=[
-    ['Rendelések',t,''],['Összes tétel',items,'gold'],['Összes érték',tot.toFixed(2),'blue']
+    ['Total orders',t,''],['Total items',items,'gold'],['Total value',tot.toFixed(2),'blue']
   ].map(function(s){ return '<div class="sc '+s[2]+'"><div class="v">'+s[1]+'</div><div class="l">'+s[0]+'</div></div>'; }).join('');
 }
 function renderOrders() {
@@ -846,10 +959,10 @@ function renderOrders() {
       +'</div></td></tr>';
   }).join('');
 }
-function delOrder(id){ if(!confirm('Törli ezt a rendelést?')) return; orders=orders.filter(function(o){return o.id!==id;}); saveO(); renderOrders(); }
-function delAllOrders(){ if(!orders.length||!confirm('Töröl minden ('+orders.length+') rendelést?')) return; orders=[]; saveO(); renderOrders(); }
+function delOrder(id){ if(!confirm('Delete this order?')) return; orders=orders.filter(function(o){return o.id!==id;}); saveO(); renderOrders(); }
+function delAllOrders(){ if(!orders.length||!confirm('Delete all ('+orders.length+') orders?')) return; orders=[]; saveO(); renderOrders(); }
 function exportOrdersCSV() {
-  if (!orders.length){ toast('Nincs exportálható rendelés!','#c62828'); return; }
+  if (!orders.length){ toast('No orders to export!','#c62828'); return; }
   var csv='\uFEFF'+'Order No.;Date;Recorder;Buyer;Contact;Country;City;Email;Phone;Currency;Subtotal;Notes;Group;Code;Desc;Qty;Unit;Price;Total\n';
   orders.forEach(function(o){
     var base=[o.orderno,o.date,o.recorder,o.buyer,o.contact,o.orszag,o.city,o.email,o.phone,o.currency,o.subtotal,o.notes].map(function(v){return '"'+String(v||'').replace(/"/g,'""')+'"';}).join(';');
@@ -857,7 +970,7 @@ function exportOrdersCSV() {
     else { o.items.forEach(function(it){ csv+=base+';'+[it.group,it.code,it.desc,it.qty,it.unit,it.price,it.tot].map(function(v){return '"'+String(v||'').replace(/"/g,'""')+'"';}).join(';')+'\n'; }); }
   });
   dl(csv,'sacroexpo2026_orders_'+today()+'.csv');
-  toast('CSV letöltve!','#1565c0');
+  toast('CSV downloaded!','#1565c0');
 }
 
 // ── ORDER MODAL ────────────────────────────────────────────────
@@ -871,7 +984,7 @@ function openOrder(id, edit) {
   document.getElementById('om-view').style.display='block';
   document.getElementById('om-edit').style.display='none';
   document.getElementById('om-savebar').classList.remove('on');
-  document.getElementById('om-edit-btn').textContent='✏ Szerkesztés';
+  document.getElementById('om-edit-btn').textContent='✏ Edit';
   document.getElementById('om').classList.add('on');
   if (edit) omToggleEdit();
 }
@@ -999,8 +1112,8 @@ function omSave() {
   document.getElementById('om-view').style.display='block';
   document.getElementById('om-edit').style.display='none';
   document.getElementById('om-savebar').classList.remove('on');
-  document.getElementById('om-edit-btn').textContent='✏ Szerkesztés';
-  toast('✓ Rendelés frissítve!','#2e7d32');
+  document.getElementById('om-edit-btn').textContent='✏ Edit';
+  toast('✓ Order updated!','#2e7d32');
 }
 function omCancelEdit() {
   omEditing=false;
@@ -1009,7 +1122,7 @@ function omCancelEdit() {
   document.getElementById('om-view').style.display='block';
   document.getElementById('om-edit').style.display='none';
   document.getElementById('om-savebar').classList.remove('on');
-  document.getElementById('om-edit-btn').textContent='✏ Szerkesztés';
+  document.getElementById('om-edit-btn').textContent='✏ Edit';
 }
 
 // ── EMAIL ──────────────────────────────────────────────────────
@@ -1040,6 +1153,8 @@ function openEmail() {
   lines.push('',sep,'','If you have any questions, please do not hesitate to contact us.','','Best regards,');
   if(o.recorder) lines.push(o.recorder);
   lines.push('SACROEXPO 2026 Team');
+  lines.push('');
+  lines.push('For orders & enquiries: order@sacrafamiglia.hu');
   document.getElementById('em-to').value=o.email||'';
   document.getElementById('em-sub').value='Order Confirmation — '+(o.orderno||'')+' / '+o.buyer;
   document.getElementById('em-body').value=lines.join('\n');
@@ -1047,14 +1162,14 @@ function openEmail() {
 }
 function copyEmail() {
   var ta=document.getElementById('em-body'); ta.select(); document.execCommand('copy');
-  toast('📋 Szöveg másolva vágólapra!','#1565c0');
+  toast('📋 Copied to clipboard!','#1565c0');
 }
 function sendEmail() {
   var to=document.getElementById('em-to').value;
   var sub=encodeURIComponent(document.getElementById('em-sub').value);
   var body=encodeURIComponent(document.getElementById('em-body').value);
   var ml='mailto:'+to+'?subject='+sub+'&body='+body;
-  if(ml.length>2000){ toast('⚠ Szöveg túl hosszú — használd a Másolás gombot!','#e65100'); return; }
+  if(ml.length>2000){ toast('⚠ Text too long — use Copy button!','#e65100'); return; }
   window.location.href=ml;
 }
 
@@ -1066,8 +1181,6 @@ function dl(csv, fn) {
 }
 
 // ── INIT ──────────────────────────────────────────────────────
-load();
-// Set today's date if within expo range
 (function(){
   var t=today();
   ['f-dat','o-dat'].forEach(function(id){
@@ -1083,6 +1196,8 @@ load();
   ['cm','om','em'].forEach(function(id){
     document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) closeModal(id); });
   });
+  // Start Firebase sync
+  load();
 })();
 </script>
 </body>
