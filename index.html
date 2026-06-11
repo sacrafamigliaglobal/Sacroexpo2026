@@ -141,8 +141,6 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
 .nkprev img{max-height:80px;border-radius:6px;border:1px solid #ddd;margin-right:8px}
 @media(max-width:500px){.cgrid{grid-template-columns:1fr}.ci.wide{grid-column:span 1}.egrid{grid-template-columns:1fr}}
 </style>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -496,6 +494,8 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
 
 <div class="toast" id="toast"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
 // ── FIREBASE CONFIG ───────────────────────────────────────────
 const firebaseConfig = {
@@ -524,7 +524,11 @@ function load() {
   showSyncStatus('connecting');
   db.ref('contacts').on('value', function(snap) {
     contacts = [];
-    snap.forEach(function(child) { contacts.push(child.val()); });
+    snap.forEach(function(child) {
+      var v = child.val();
+      v.fbKey = child.key; // always store Firebase key
+      contacts.push(v);
+    });
     contacts.sort(function(a,b){ return (b.id||0)-(a.id||0); });
     fbReady = true;
     showSyncStatus('ok');
@@ -533,23 +537,49 @@ function load() {
 
   db.ref('orders').on('value', function(snap) {
     orders = [];
-    snap.forEach(function(child) { orders.push(child.val()); });
+    snap.forEach(function(child) {
+      var v = child.val();
+      v.fbKey = child.key;
+      orders.push(v);
+    });
     orders.sort(function(a,b){ return (b.id||0)-(a.id||0); });
     if (document.getElementById('pg-orders').style.display !== 'none') { renderOrders(); renderOrderStats(); }
   }, function(err) { console.error('Orders sync error', err); });
 }
 
 function saveC() {
-  // Save all contacts to Firebase
-  var obj = {};
-  contacts.forEach(function(c) { obj['c_'+c.id] = c; });
-  db.ref('contacts').set(obj);
+  // Each contact saved individually with its own Firebase key - no collision
+  var c = contacts[0]; // newest is always first
+  if (!c) return;
+  var key = c.fbKey || db.ref('contacts').push().key;
+  c.fbKey = key;
+  db.ref('contacts/' + key).set(c);
 }
 
 function saveO() {
-  var obj = {};
-  orders.forEach(function(o) { obj['o_'+o.id] = o; });
-  db.ref('orders').set(obj);
+  var o = orders[0];
+  if (!o) return;
+  var key = o.fbKey || db.ref('orders').push().key;
+  o.fbKey = key;
+  db.ref('orders/' + key).set(o);
+}
+
+function updateC(c) {
+  if (!c.fbKey) { saveC(); return; }
+  db.ref('contacts/' + c.fbKey).set(c);
+}
+
+function updateO(o) {
+  if (!o.fbKey) { saveO(); return; }
+  db.ref('orders/' + o.fbKey).set(o);
+}
+
+function deleteC(fbKey) {
+  db.ref('contacts/' + fbKey).remove();
+}
+
+function deleteO(fbKey) {
+  db.ref('orders/' + fbKey).remove();
 }
 
 function showSyncStatus(state) {
@@ -557,7 +587,19 @@ function showSyncStatus(state) {
   if (!el) return;
   if (state === 'connecting') { el.textContent = '⏳ Connecting...'; el.style.color = '#b8960c'; }
   else if (state === 'ok')    { el.textContent = '✓ Synced'; el.style.color = '#4caf50'; }
-  else if (state === 'error') { el.textContent = '✗ Offline'; el.style.color = '#e53935'; }
+  else if (state === 'error') { el.textContent = '✗ Offline — data saved locally'; el.style.color = '#e53935'; }
+}
+
+// Firebase connection state monitoring
+function initConnectionMonitor() {
+  var connRef = db.ref('.info/connected');
+  connRef.on('value', function(snap) {
+    if (snap.val() === true) {
+      showSyncStatus('ok');
+    } else {
+      showSyncStatus('error');
+    }
+  });
 }
 
 // ── TAB SWITCHING ─────────────────────────────────────────────
@@ -634,8 +676,9 @@ function saveContact() {
   if (document.getElementById('f-kk').checked)  erd.push('Kisker árlista');
   var et=document.getElementById('f-et').value.trim();
   if (document.getElementById('f-eo').checked && et) erd.push('Egyéb: '+et);
+  var newKey = db.ref('contacts').push().key;
   contacts.unshift({
-    id:Date.now(), datum:dat, kitolto:kit,
+    id:Date.now(), fbKey:newKey, datum:dat, kitolto:kit,
     ceg:document.getElementById('f-ceg').value.trim(),
     orszag:getOr('f-or','f-ore'),
     varos:document.getElementById('f-var').value.trim(),
@@ -709,7 +752,13 @@ function renderContacts() {
       +'</div></td></tr>';
   }).join('');
 }
-function delContact(id){ if(!confirm('Delete this record?')) return; contacts=contacts.filter(function(c){return c.id!==id;}); saveC(); renderContacts(); }
+function delContact(id){
+  if(!confirm('Delete this record?')) return;
+  var c = contacts.find(function(x){return x.id===id;});
+  if (c && c.fbKey) deleteC(c.fbKey);
+  contacts=contacts.filter(function(c){return c.id!==id;});
+  renderContacts();
+}
 function delAllContacts(){ if(!contacts.length||!confirm('Delete all ('+contacts.length+') visitors?')) return; contacts=[]; saveC(); renderContacts(); }
 function exportContactsCSV() {
   if (!contacts.length){ toast('No data to export!','#c62828'); return; }
@@ -825,7 +874,7 @@ function cmSave() {
   c.egyeb=document.getElementById('ce-egy').value.trim();
   c.megj=document.getElementById('ce-meg').value.trim();
   c.erdeklodes=erds;
-  contacts[idx]=c; saveC(); renderContacts();
+  contacts[idx]=c; updateC(c); renderContacts();
   cmEditing=false;
   renderCView(c);
   document.getElementById('cm-view').style.display='block';
@@ -897,7 +946,11 @@ function getORows() {
 }
 function autoOrderNo() {
   var el=document.getElementById('o-num');
-  if (el&&!el.value) el.value='SE2026-'+String(orders.length+1).padStart(3,'0');
+  if (el&&!el.value) {
+    // Use timestamp suffix to avoid collision between tablets
+    var ts = String(Date.now()).slice(-4);
+    el.value='SE2026-'+ts;
+  }
 }
 function saveOrder() {
   var buy=document.getElementById('o-buy').value.trim();
@@ -905,8 +958,9 @@ function saveOrder() {
   if (!buy){ toast('❗ Please enter buyer name!','#c62828'); return; }
   var items=getORows();
   var sub=calcOTotal();
+  var newOKey = db.ref('orders').push().key;
   orders.unshift({
-    id:Date.now(), orderno:document.getElementById('o-num').value.trim(),
+    id:Date.now(), fbKey:newOKey, orderno:document.getElementById('o-num').value.trim(),
     date:dat, recorder:document.getElementById('o-rec').value.trim(),
     buyer:buy, contact:document.getElementById('o-con').value.trim(),
     orszag:getOr('o-or','o-ore'), city:document.getElementById('o-cit').value.trim(),
@@ -959,7 +1013,13 @@ function renderOrders() {
       +'</div></td></tr>';
   }).join('');
 }
-function delOrder(id){ if(!confirm('Delete this order?')) return; orders=orders.filter(function(o){return o.id!==id;}); saveO(); renderOrders(); }
+function delOrder(id){
+  if(!confirm('Delete this order?')) return;
+  var o = orders.find(function(x){return x.id===id;});
+  if (o && o.fbKey) deleteO(o.fbKey);
+  orders=orders.filter(function(o){return o.id!==id;});
+  renderOrders();
+}
 function delAllOrders(){ if(!orders.length||!confirm('Delete all ('+orders.length+') orders?')) return; orders=[]; saveO(); renderOrders(); }
 function exportOrdersCSV() {
   if (!orders.length){ toast('No orders to export!','#c62828'); return; }
@@ -1105,7 +1165,7 @@ function omSave() {
   o.recorder=document.getElementById('oe-rec').value.trim();
   o.notes=document.getElementById('oe-not').value.trim();
   o.items=items; o.subtotal=calcOETotal();
-  orders[idx]=o; saveO(); renderOrders();
+  orders[idx]=o; updateO(o); renderOrders();
   omEditing=false;
   document.getElementById('om-title').textContent=(o.orderno||'Rendelés')+' — '+o.buyer;
   renderOView(norm(o));
@@ -1198,6 +1258,7 @@ function dl(csv, fn) {
   });
   // Start Firebase sync
   load();
+  initConnectionMonitor();
 })();
 </script>
 </body>
