@@ -145,9 +145,9 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
 <body>
 
 <div class="hdr">
-  <div>
-    <h1>⛪ SACROEXPO 2026 — POLSKA</h1>
-    <div class="sub">Expo Poland · 2026.06.15–17 · Visitor Data Collection</div>
+  <div style="cursor:pointer" onclick="editEventName()" title="Click to edit event name">
+    <h1 id="hdr-title">⛪ Expo App</h1>
+    <div class="sub" id="hdr-sub">Click to set event name & dates</div>
   </div>
   <div style="display:flex;align-items:center;gap:12px">
   <span id="sync-status" style="font-size:11px;color:#b8960c">⏳ Connecting...</span>
@@ -176,11 +176,12 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
             <option value="Laci">Laci</option>
             <option value="Robi">Robi</option>
             <option value="Magdi">Magdi</option>
+            <option value="Peti">Peti</option>
           </select>
         </div>
         <div class="fg" style="flex:1;min-width:130px">
           <label>Date *</label>
-          <input id="f-dat" type="date" min="2026-06-15" max="2026-06-17">
+          <input id="f-dat" type="date">
         </div>
       </div>
     </div>
@@ -318,7 +319,7 @@ hr.div{border:none;border-top:1px solid #eee;margin:12px 0}
         </div>
         <div>
           <div class="fg" style="margin-bottom:10px"><label>Order Number</label><input id="o-num" type="text" placeholder="SE2026-001..." autocomplete="off"></div>
-          <div class="fg" style="margin-bottom:10px"><label>Order Date</label><input id="o-dat" type="date" min="2026-06-15" max="2026-06-17"></div>
+          <div class="fg" style="margin-bottom:10px"><label>Order Date</label><input id="o-dat" type="date"></div>
           <div class="fg" style="margin-bottom:10px"><label>Recorded by</label><input id="o-rec" type="text" placeholder="Munkatárs neve..." autocomplete="off"></div>
           <div class="fg"><label>Currency</label>
             <select id="o-cur">
@@ -840,7 +841,7 @@ function cmToggleEdit() {
     var eErd=(c.erdeklodes||[]).filter(function(e){return e.startsWith('Egyéb:');}).map(function(e){return e.replace('Egyéb: ','').replace('Egyéb:','');}).join('');
     document.getElementById('cm-edit').innerHTML=
       '<div class="egrid">'
-      +'<div class="ef-group"><label>Dátum</label><input id="ce-dat" type="date" value="'+esc(c.datum||'')+'" min="2026-06-15" max="2026-06-17"></div>'
+      +'<div class="ef-group"><label>Dátum</label><input id="ce-dat" type="date" value="'+esc(c.datum||'')+'"></div>'
       +'<div class="ef-group"><label>Kitöltő neve</label><input id="ce-kit" type="text" value="'+esc(c.kitolto||'')+'"></div>'
       +'<div class="ef-group"><label>Cég neve</label><input id="ce-ceg" type="text" value="'+esc(c.ceg||'')+'"></div>'
       +'<div class="ef-group"><label>Kontakt neve</label><input id="ce-kon" type="text" value="'+esc(c.kontakt||'')+'"></div>'
@@ -1113,7 +1114,7 @@ function renderOEdit(o) {
   if(!(o.items||[]).length){addOERow();addOERow();}
 }
 function ef(lbl,id,val,type){
-  return '<div class="ef-group"><label>'+lbl+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val||'')+'"'+(type==='date'?' min="2026-06-15" max="2026-06-17"':'')+'></div>';
+  return '<div class="ef-group"><label>'+lbl+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val||'')+'"'+(type==='date'?'':'')+'></div>';
 }
 function addOERow(it) {
   oeRowId++; var id=oeRowId; it=it||{};
@@ -1245,7 +1246,7 @@ function dl(csv, fn) {
   var t=today();
   ['f-dat','o-dat'].forEach(function(id){
     var el=document.getElementById(id);
-    if(el) el.value=(t>='2026-06-15'&&t<='2026-06-17')?t:'2026-06-15';
+    if(el) el.value=t;
   });
   // Hide all pages except form
   document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
@@ -1260,6 +1261,24 @@ function dl(csv, fn) {
   load();
   initConnectionMonitor();
 })();
+
+function editEventName() {
+  var title = prompt('Event title (e.g. SACROEXPO 2026 — POLSKA):', document.getElementById('hdr-title').textContent);
+  if (title === null) return;
+  var sub = prompt('Event subtitle (e.g. Expo Poland · 2026.06.15–17 · Visitor Data Collection):', document.getElementById('hdr-sub').textContent);
+  if (sub === null) return;
+  var settings = {title: title, sub: sub};
+  db.ref('settings/event').set(settings);
+  applyEventName(settings);
+}
+function applyEventName(s) {
+  document.getElementById('hdr-title').textContent = (s && s.title) ? s.title : '⛪ Expo App';
+  document.getElementById('hdr-sub').textContent = (s && s.sub) ? s.sub : 'Click to set event name & dates';
+}
+db.ref('settings/event').on('value', function(snap) {
+  if (snap.val()) applyEventName(snap.val());
+});
+
 </script>
 </body>
 </html>
